@@ -7,9 +7,16 @@ public class Managers : MonoBehaviour
     static Managers s_instance;
     static bool s_init = false;
     private static GridManager _grid = new GridManager();
+    private static ObjectManager _obj = new ObjectManager();
+    private static PoolManager _pool = new PoolManager();
+    private static ResourceManager _resource = new ResourceManager();
 
 
     public static GridManager Grid {get {return _grid; }}
+    public static ObjectManager Object { get { return _obj; } }
+    public static PoolManager Pool { get { return _pool; } }
+    public static ResourceManager Resource { get { return _resource; } }
+
     public static Managers Instance
     {
         get

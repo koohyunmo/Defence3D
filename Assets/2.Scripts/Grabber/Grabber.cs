@@ -36,7 +36,11 @@ public class Grabber : MonoBehaviour
                 //Debug.Log("Drag");
                 selectedObject = hit.transform.gameObject.GetComponent<GridObject>();
                 if (selectedObject)
+                {
                     originalPos = selectedObject.transform.position;
+                    selectedObject.DragOn();
+                }
+
             }
         }
     }
@@ -54,6 +58,8 @@ public class Grabber : MonoBehaviour
         {
             selectedObject.transform.position = originalPos;
         }
+        
+        selectedObject.Drop();
 
         Cursor.visible = true;
         selectedObject = null;

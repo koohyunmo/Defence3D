@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class GridManager
 {
-    Grid grid = null;
+    private GridSystem grid = null;
+    private Vector3[] corners = new Vector3[4];
 
     public void CreateGrid(int width, int height, float cellSize, Vector3 planePosition)
     {
-        grid = new Grid(width, height, cellSize, planePosition);
+        grid = new GridSystem(width, height, cellSize, planePosition);
     }
 
     public void RemoveGridObject(Vector3 worldPosition)
@@ -26,8 +27,22 @@ public class GridManager
         return grid.Swap(worldPosition,originalPos);
     }
 
-    public Grid GetGrid()
+    public GridSystem GetGrid()
     {
         return grid;
+    }
+
+    public void SetPath(Vector3[] path)
+    {
+        corners = path;
+    }
+
+    public Vector3[] GetPath()
+    {
+        return corners;
+    }
+    public Vector3 GetPath(int index)
+    {
+        return corners[index % corners.Length];
     }
 }

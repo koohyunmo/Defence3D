@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Grid
+public class GridSystem
 {
     private int width;
     private int height;
@@ -11,9 +11,9 @@ public class Grid
     private GridObject[,] gridObj;
     private Vector3 originPosition;
     private GameObject root = null;
-    private Stack<int> indexStack  = new();
+    private Queue<int> indexStack  = new();
 
-    public Grid(int width, int height, float cellSize, Vector3 originPosition)
+    public GridSystem(int width, int height, float cellSize, Vector3 originPosition)
     {
         this.width = width;
         this.height = height;
@@ -28,7 +28,7 @@ public class Grid
         {
             for (int z = 0; z < gridArray.GetLength(1); z++)
             {
-                indexStack.Push(GetIndex(x,z));
+                indexStack.Enqueue(GetIndex(x,z));
                 Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x, z + 1), Color.red, 100f);
                 Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x + 1, z), Color.red, 100f);
             }
@@ -80,7 +80,7 @@ public class Grid
             sObj.transform.position = GetGridPosition(tX, tZ);
             gridObj[tX, tZ] = sObj;
             gridObj[sX, sZ] = null;
-            indexStack.Push(GetIndex(sX,sZ));
+            indexStack.Enqueue(GetIndex(sX,sZ));
         }
 
         return true;
@@ -90,7 +90,7 @@ public class Grid
     {
         while (indexStack.Count > 0)
         {
-            int curIndex = indexStack.Pop();
+            int curIndex = indexStack.Dequeue();
             (int x, int z) xz = IndexToXZ(curIndex);
 
             int x = xz.Item1;
@@ -106,6 +106,19 @@ public class Grid
 
         return false; 
     }
+    private void CreateUnit(int x, int z)
+    {
+        //var prefab = Resources.Load<GameObject>("Cube");
+        var prefab  = Managers.Resource.Load<GameObject>("Cube");
+
+        Vector3 newPos = GetWorldPosition(x, z) + new Vector3(cellSize, 0, cellSize) * 0.5f;
+        var go = GameObject.Instantiate(prefab, root.transform);
+        go.transform.position = newPos;
+
+        gridObj[x, z] = go.GetComponent<GridObject>();
+        gridObj[x, z].name = $"{x},{z} : {z + x * height}";
+        SetValue(x, z, 1);
+    }
 
 
     public bool Remove(Vector3 worldPosition)
@@ -117,22 +130,9 @@ public class Grid
 
         GameObject.Destroy(gridObj[x, z].gameObject);
         gridObj[x, z] = null;
-        indexStack.Push(GetIndex(x,z));
+        indexStack.Enqueue(GetIndex(x,z));
         SetValue(x, z, 0);
         return true;
-    }
-
-    private void CreateUnit(int x, int z)
-    {
-        var prefab = Resources.Load<GameObject>("Cube");
-
-        Vector3 newPos = GetWorldPosition(x, z) + new Vector3(cellSize, 0, cellSize) * 0.5f;
-        var go = GameObject.Instantiate(prefab, root.transform);
-        go.transform.position = newPos;
-
-        gridObj[x, z] = go.GetComponent<GridObject>();
-        gridObj[x, z].name = $"{x},{z} : {z + x * height}";
-        SetValue(x,z,1);
     }
 
     private Vector3 GetGridPosition(int x, int z)

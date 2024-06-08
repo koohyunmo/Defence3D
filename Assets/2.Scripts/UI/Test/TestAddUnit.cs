@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TestAddUnit : MonoBehaviour
 {
-    public Grid grid;
+    public GridSystem grid;
     public void Add()
     {
         if(Managers.Grid.AddGridObject())
