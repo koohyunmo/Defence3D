@@ -10,6 +10,7 @@ public class TestGrid : MonoBehaviour
     [SerializeField] GameObject plane;
     private Vector3[] corners = new Vector3[4];
 
+
     void Start()
     {
         // Plane의 MeshRenderer를 가져옵니다.
@@ -49,6 +50,7 @@ public class TestGrid : MonoBehaviour
         }
         Managers.Grid.SetPath(corners);
     }
+
 
     private void Update()
     {

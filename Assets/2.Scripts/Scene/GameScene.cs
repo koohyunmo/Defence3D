@@ -5,8 +5,9 @@ using UnityEngine;
 public class GameScene : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
+
         Managers.Resource.LoadAllAsync<Object>("prefab", (key, count, totalCount) =>
         {
             Debug.Log($"{key} {count}/{totalCount}");
@@ -23,12 +24,7 @@ public class GameScene : MonoBehaviour
     IEnumerator co_MonsterSpawn()
     {
         yield return new WaitForSeconds(5f);
-
-        while(true)
-        {
-            yield return new WaitForSeconds(0.75f);
-            Managers.Object.SpawnMosnter();
-        }
+        Managers.Stage.StagetStart();
     }
 
 }

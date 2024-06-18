@@ -11,6 +11,10 @@ public class GridManager
     {
         grid = new GridSystem(width, height, cellSize, planePosition);
     }
+    public void CreateGrid(int width, int height, float cellSizeX,float cellSizeZ, Vector3 planePosition)
+    {
+        grid = new GridSystem(width, height, cellSizeX, cellSizeZ, planePosition);
+    }
 
     public void RemoveGridObject(Vector3 worldPosition)
     {

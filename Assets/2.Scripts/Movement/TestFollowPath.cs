@@ -14,6 +14,7 @@ public class TestFollowPath : MonoBehaviour
         pathPoints = Managers.Grid.GetPath();
         transform.position = pathPoints[0];
         currentPointIndex = 0;
+        transform.LookAt(pathPoints[currentPointIndex+1]);
     }
 
     void Update()
@@ -32,6 +33,7 @@ public class TestFollowPath : MonoBehaviour
         {
             // 다음 포인트로 이동
             currentPointIndex = (currentPointIndex + 1) % pathPoints.Length;
+            transform.LookAt(pathPoints[currentPointIndex]);
         }
     }
 }

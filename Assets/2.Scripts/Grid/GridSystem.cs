@@ -7,7 +7,8 @@ public class GridSystem
     private int width;
     private int height;
     private int[,] gridArray;
-    private float cellSize;
+    private float cellSizeX;
+    private float cellSizeZ;
     private GridObject[,] gridObj;
     private Vector3 originPosition;
     private GameObject root = null;
@@ -17,7 +18,8 @@ public class GridSystem
     {
         this.width = width;
         this.height = height;
-        this.cellSize = cellSize;
+        this.cellSizeX = cellSize;
+        this.cellSizeZ = cellSize;
         this.originPosition = originPosition;
         root = new GameObject(name: "GridRoot");
 
@@ -29,6 +31,32 @@ public class GridSystem
             for (int z = 0; z < gridArray.GetLength(1); z++)
             {
                 indexStack.Enqueue(GetIndex(x,z));
+                Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x, z + 1), Color.red, 100f);
+                Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x + 1, z), Color.red, 100f);
+            }
+        }
+
+        Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.red, 100f);
+        Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.red, 100f);
+    }
+
+    public GridSystem(int width, int height, float cellSizeX,float cellSizeZ, Vector3 originPosition)
+    {
+        this.width = width;
+        this.height = height;
+        this.cellSizeX = cellSizeX;
+        this.cellSizeZ = cellSizeZ;
+        this.originPosition = originPosition;
+        root = new GameObject(name: "GridRoot");
+
+        gridArray = new int[width, height];
+        gridObj = new GridObject[width, height];
+
+        for (int x = 0; x < gridArray.GetLength(0); x++)
+        {
+            for (int z = 0; z < gridArray.GetLength(1); z++)
+            {
+                indexStack.Enqueue(GetIndex(x, z));
                 Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x, z + 1), Color.red, 100f);
                 Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x + 1, z), Color.red, 100f);
             }
@@ -51,11 +79,11 @@ public class GridSystem
     {
         int tX = -1, tZ = -1;
         GetXZ(targetPos, out tX, out tZ);
-        if (OOB(tX, tZ)) return false;
+        if (OutOfBounds(tX, tZ)) return false;
 
         int sX = -1, sZ = -1;
         GetXZ(originalPos, out sX, out sZ);
-        if (OOB(sX, sZ)) return false;
+        if (OutOfBounds(sX, sZ)) return false;
 
         var targetObj = gridObj[tX, tZ];
         var sObj = gridObj[sX, sZ];
@@ -96,7 +124,7 @@ public class GridSystem
             int x = xz.Item1;
             int z = xz.Item2;
 
-            if (OOB(x, z)) return false; // 밤위 밖 탈출
+            if (OutOfBounds(x, z)) return false; // 밤위 밖 탈출
             if (gridObj[x, z]) continue; 
 
             SetValue(x, z, 1);
@@ -108,14 +136,13 @@ public class GridSystem
     }
     private void CreateUnit(int x, int z)
     {
-        //var prefab = Resources.Load<GameObject>("Cube");
-        var prefab  = Managers.Resource.Load<GameObject>("Cube");
+        Managers.Random.TestRandom();
+        var weapon  = Managers.Object.SpawnWeapon();
+        weapon.transform.SetParent(root.transform);
+        Vector3 newPos = GetWorldPosition(x, z) + new Vector3(cellSizeX, 0, cellSizeZ) * 0.5f;
+        weapon.transform.position = newPos;
 
-        Vector3 newPos = GetWorldPosition(x, z) + new Vector3(cellSize, 0, cellSize) * 0.5f;
-        var go = GameObject.Instantiate(prefab, root.transform);
-        go.transform.position = newPos;
-
-        gridObj[x, z] = go.GetComponent<GridObject>();
+        gridObj[x, z] = weapon;
         gridObj[x, z].name = $"{x},{z} : {z + x * height}";
         SetValue(x, z, 1);
     }
@@ -125,7 +152,7 @@ public class GridSystem
     {
         int x = -1, z = -1;
         GetXZ(worldPosition, out x, out z);
-        if(OOB(x,z)) return false;
+        if(OutOfBounds(x,z)) return false;
         if(gridObj[x,z] == null) return false;
 
         GameObject.Destroy(gridObj[x, z].gameObject);
@@ -137,17 +164,17 @@ public class GridSystem
 
     private Vector3 GetGridPosition(int x, int z)
     {
-        return GetWorldPosition(x, z) + new Vector3(cellSize, 0, cellSize) * 0.5f;
+        return GetWorldPosition(x, z) + new Vector3(cellSizeX, 0, cellSizeZ) * 0.5f;
     }
 
     private Vector3 GetWorldPosition(int x, int z)
     {
-        return new Vector3(x, 0, z) * cellSize + originPosition;
+        return new Vector3(x, 0, z) * cellSizeX + originPosition;
     }
 
     public void SetValue(int x, int z, int value)
     {
-        if (OOB(x, z)) return;
+        if (OutOfBounds(x, z)) return;
 
         gridArray[x, z] = value;
     }
@@ -161,8 +188,8 @@ public class GridSystem
 
     private void GetXZ(Vector3 worldPosition, out int x, out int z)
     {
-        x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
-        z = Mathf.FloorToInt((worldPosition - originPosition).z / cellSize);
+        x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSizeX);
+        z = Mathf.FloorToInt((worldPosition - originPosition).z / cellSizeZ);
     }
 
     public int GetValue(Vector3 worldPosition)
@@ -190,14 +217,14 @@ public class GridSystem
 
     public int GetValue(int x, int z)
     {
-        if (OOB(x, z)) return -1;
+        if (OutOfBounds(x, z)) return -1;
         else
         {
             return gridArray[x, z];
         }
     }
 
-    private bool OOB(int x, int z)
+    private bool OutOfBounds(int x, int z)
     {
         return x < 0 || x >= width || z < 0 || z >= height;
     }

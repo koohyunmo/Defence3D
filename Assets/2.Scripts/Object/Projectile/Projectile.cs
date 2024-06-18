@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    private int damage = 0;
 
-    public void Shoot(Enemy target, Vector3 firePos)
+    public void Shoot(Monster target, Vector3 firePos,int damage)
     {
+        this.damage = 0;
         gameObject.transform.position = firePos;
+        this.damage = damage;
         StartCoroutine(MoveProjectile(target,gameObject));
     }
 
-    IEnumerator MoveProjectile(Enemy enemy,GameObject projectile)
+    IEnumerator MoveProjectile(Monster enemy,GameObject projectile)
     {
         projectile.transform.position = transform.position;
 
@@ -27,7 +30,7 @@ public class Projectile : MonoBehaviour
 
         if (projectile != null && enemy.isDead == false)
         {
-            enemy.GetComponent<Enemy>().OnDamage(50);
+            enemy.GetComponent<Monster>().OnDamage(damage);
             Managers.Resource.Destroy(projectile);
         }
         else

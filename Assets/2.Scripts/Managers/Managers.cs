@@ -6,37 +6,69 @@ public class Managers : MonoBehaviour
 {
     static Managers s_instance;
     static bool s_init = false;
-    private static GridManager _grid = new GridManager();
-    private static ObjectManager _obj = new ObjectManager();
-    private static PoolManager _pool = new PoolManager();
-    private static ResourceManager _resource = new ResourceManager();
 
+    //------------------------//
+    //          Content       //
+    //------------------------//
+    private GridManager _grid = new GridManager();
+    private ObjectManager _obj = new ObjectManager();
+    private RandomManager _rnd = new RandomManager();
+    private StageManager _stage = new StageManager();
 
-    public static GridManager Grid {get {return _grid; }}
-    public static ObjectManager Object { get { return _obj; } }
-    public static PoolManager Pool { get { return _pool; } }
-    public static ResourceManager Resource { get { return _resource; } }
+    //------------------------//
+    //          Core          //
+    //------------------------//
+    private PoolManager _pool = new PoolManager();
+    private ResourceManager _resource = new ResourceManager();
+
+    public static GridManager Grid { get { return Instance?._grid; } }
+    public static ObjectManager Object { get { return Instance?._obj; } }
+    public static RandomManager Random { get { return Instance?._rnd; } }
+    public static PoolManager Pool { get { return Instance?._pool; } }
+    public static ResourceManager Resource { get { return Instance?._resource; } }
+    public static StageManager Stage { get { return Instance?._stage; } }
 
     public static Managers Instance
     {
         get
         {
-            if (s_init == false)
+            if (s_instance == null)
             {
-                s_init = true;
-
                 GameObject go = GameObject.Find("@Managers");
                 if (go == null)
                 {
-                    go = new GameObject() { name = "@Managers" };
-
+                    go = new GameObject("@Managers");
+                    DontDestroyOnLoad(go);
+                    s_instance = go.AddComponent<Managers>();
+                    s_instance.Initialize();
                 }
-
-                DontDestroyOnLoad(go);
-                s_instance = go.GetComponent<Managers>();
+                else
+                {
+                    s_instance = go.GetComponent<Managers>();
+                }
             }
-
             return s_instance;
+        }
+    }
+
+    private void Initialize()
+    {
+        // 초기화 메서드 호출
+        _rnd.Init();
+        _resource.Init();
+    }
+
+    void Awake()
+    {
+        if (s_instance == null)
+        {
+            s_instance = this;
+            DontDestroyOnLoad(gameObject);
+            Initialize();
+        }
+        else
+        {
+            Destroy(gameObject);
         }
     }
 }
