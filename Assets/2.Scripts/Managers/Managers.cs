@@ -14,6 +14,8 @@ public class Managers : MonoBehaviour
     private ObjectManager _obj = new ObjectManager();
     private RandomManager _rnd = new RandomManager();
     private StageManager _stage = new StageManager();
+    private DataManager _data = new DataManager();
+    private UpgradeManager _upgrade = new UpgradeManager();
 
     //------------------------//
     //          Core          //
@@ -27,6 +29,9 @@ public class Managers : MonoBehaviour
     public static PoolManager Pool { get { return Instance?._pool; } }
     public static ResourceManager Resource { get { return Instance?._resource; } }
     public static StageManager Stage { get { return Instance?._stage; } }
+    public static DataManager Data { get { return Instance?._data; } }
+
+    public static UpgradeManager Upgrade { get { return Instance?._upgrade; } }
 
     public static Managers Instance
     {
@@ -56,6 +61,7 @@ public class Managers : MonoBehaviour
         // 초기화 메서드 호출
         _rnd.Init();
         _resource.Init();
+        Application.targetFrameRate = 60;
     }
 
     void Awake()

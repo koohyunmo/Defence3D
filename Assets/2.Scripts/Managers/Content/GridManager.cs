@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static MyEnums;
 
 public class GridManager
 {
@@ -25,6 +26,12 @@ public class GridManager
     {
         return grid.AddUnit();
     }
+
+    public bool AddGridObject(UnitGrade grade)
+    {
+        return grid.AddUnit(grade);
+    }
+
 
     public bool Swap(Vector3 worldPosition, Vector3 originalPos)
     {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static MyEnums;
 
 public class GridSystem
 {
@@ -134,10 +135,41 @@ public class GridSystem
 
         return false; 
     }
+
+    public bool AddUnit(UnitGrade grade)
+    {
+        while (indexStack.Count > 0)
+        {
+            int curIndex = indexStack.Dequeue();
+            (int x, int z) xz = IndexToXZ(curIndex);
+
+            int x = xz.Item1;
+            int z = xz.Item2;
+
+            if (OutOfBounds(x, z)) return false; // 밤위 밖 탈출
+            if (gridObj[x, z]) continue;
+
+            SetValue(x, z, 1);
+            CreateUnit(x, z,grade);
+            return true;
+        }
+
+        return false;
+    }
     private void CreateUnit(int x, int z)
     {
-        Managers.Random.TestRandom();
         var weapon  = Managers.Object.SpawnWeapon();
+        weapon.transform.SetParent(root.transform);
+        Vector3 newPos = GetWorldPosition(x, z) + new Vector3(cellSizeX, 0, cellSizeZ) * 0.5f;
+        weapon.transform.position = newPos;
+
+        gridObj[x, z] = weapon;
+        gridObj[x, z].name = $"{x},{z} : {z + x * height}";
+        SetValue(x, z, 1);
+    }
+    private void CreateUnit(int x, int z,UnitGrade grade)
+    {
+        var weapon = Managers.Object.SpawnWeapon(grade);
         weapon.transform.SetParent(root.transform);
         Vector3 newPos = GetWorldPosition(x, z) + new Vector3(cellSizeX, 0, cellSizeZ) * 0.5f;
         weapon.transform.position = newPos;

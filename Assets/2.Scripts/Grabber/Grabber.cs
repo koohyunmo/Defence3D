@@ -38,7 +38,7 @@ public class Grabber : MonoBehaviour
                 if (selectedObject)
                 {
                     originalPos = selectedObject.transform.position;
-                    selectedObject.DragOn();
+                    selectedObject.Dragging();
                 }
 
             }

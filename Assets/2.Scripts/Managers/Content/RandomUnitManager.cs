@@ -38,20 +38,20 @@ public class RandomManager
         }
     }
 
-    private Color GetColorForGrade(UnitGrade grade)
+    public Color GetColorForGrade(UnitGrade grade)
     {
         switch (grade)
         {
-            case UnitGrade.Basic: return Color.white;
-            case UnitGrade.Rare: return Color.green;
-            case UnitGrade.Ancient: return Color.blue;
+            case UnitGrade.Basic: return Color.white; // White
+            case UnitGrade.Rare: return Color.green; // Green
+            case UnitGrade.Ancient: return new Color(0f, 0.75f, 1f); // Sky Blue
             case UnitGrade.Relic: return new Color(0.5f, 0f, 0.5f); // Purple
             case UnitGrade.Epic: return new Color(1f, 0.5f, 0f); // Orange
-            case UnitGrade.Legendary: return Color.yellow;
-            case UnitGrade.Mythic: return Color.red;
-            case UnitGrade.Mythical: return new Color(1f, 0.5f, 1f); // Pink
-            case UnitGrade.Primal: return new Color(0f, 1f, 1f); // Cyan
-            default: return Color.black;
+            case UnitGrade.Legendary: return new Color(1f, 0.84f, 0f); // Gold
+            case UnitGrade.Mythic: return new Color(0.8f, 0f, 0f); // Dark Red
+            case UnitGrade.Mythical: return new Color(1f, 0.2f, 0.6f); // Hot Pink
+            case UnitGrade.Primal: return new Color(0f, 0.5f, 1f); // Deep Cyan
+            default: return Color.black; // Black
         }
     }
 

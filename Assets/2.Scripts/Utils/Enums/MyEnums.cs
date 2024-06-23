@@ -18,4 +18,12 @@ public class MyEnums
         Mythical = 8,  // 신화
         Primal = 9     // 태초
     }
+
+    public enum WeaponType
+    {
+        None = 0,
+        Sword = 1,
+        Bow = 2,
+        Axe = 3
+    }
 }

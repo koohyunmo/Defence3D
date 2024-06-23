@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class GridObject : MonoBehaviour, IDragging
 {
-    public virtual void DragOn()
+    public virtual void Dragging()
     {
 
     }

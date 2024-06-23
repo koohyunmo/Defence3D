@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static MyEnums;
 
 public class ObjectManager
 {
@@ -20,18 +21,83 @@ public class ObjectManager
     public GridObject SpawnWeapon()
     {
         var rankAndColor = Managers.Random.GetTestColorAndRank();
-        var prefab = Managers.Resource.Load<GameObject>("Sword1");
+        int type = UnityEngine.Random.Range(0,9) % 3;
+
+        WeaponType weaponType = WeaponType.None;
+        GameObject prefab = null;
+
+        if (type == 0)
+        {
+            prefab = Managers.Resource.Load<GameObject>("Sword1");
+            weaponType = WeaponType.Sword;
+        }
+        else if(type == 1)
+        {
+            prefab = Managers.Resource.Load<GameObject>("Bow1");
+            weaponType = WeaponType.Bow;
+        }
+        else if(type == 2)
+        {
+            prefab = Managers.Resource.Load<GameObject>("Axe1");
+            weaponType = WeaponType.Axe;
+        }
+
+        Debug.Assert(weaponType != WeaponType.None);
+
         var go = GameObject.Instantiate(prefab);
         var weapon = go.GetComponent<Weapon>();
 
-        //ew WeaponData("Sword1",2.5f,50,0.5f);
-        weapon.Spawn(new WeaponData("Sword", GetPowF(rankAndColor.Item1, 1.2f, 2.5f), GetPow(rankAndColor.Item1, 2f, 10), 0.25f));
+        WeaponData weaponData = null;
+
+        switch (weaponType)
+        {
+            case WeaponType.Sword:
+                weaponData = new WeaponData("Sword", GetPowF(rankAndColor.Item1, 1.2f, 2.5f) * 1.5f, Managers.Data.GetSwordDamage(rankAndColor.Item1), 1f / GetPowF(rankAndColor.Item1, 1.25f, 1f), (UnitGrade)rankAndColor.Item1);
+                break;
+            case WeaponType.Bow:
+                weaponData = new WeaponData("Bow", GetPowF(rankAndColor.Item1, 1.2f, 2.5f) * 2f, Managers.Data.GetSwordDamage(rankAndColor.Item1) / 2, 1f / GetPowF(rankAndColor.Item1, 1.25f, 1f), (UnitGrade)rankAndColor.Item1);
+                break;
+            case WeaponType.Axe:
+                weaponData = new WeaponData("Axe", GetPowF(rankAndColor.Item1, 1.2f, 2.5f), Managers.Data.GetSwordDamage(rankAndColor.Item1) * 2, 1f / GetPowF(rankAndColor.Item1, 1.25f, 1f), (UnitGrade)rankAndColor.Item1);
+                break;
+        }
+
+        Debug.Assert(weaponData != null);
+
+        weapon.Spawn(weaponData);
 
         // 자식 객체에서 Renderer를 찾기
         Renderer renderer = go.GetComponentInChildren<Renderer>();
         if (renderer != null)
         {
             renderer.material.color = rankAndColor.Item2;
+            Debug.Log($"{(UnitGrade)rankAndColor.Item1} : {weaponData.damage} : {weaponData.range}");
+        }
+        else
+        {
+            Debug.LogWarning("Renderer component not found on the instantiated weapon.");
+        }
+
+        return weapon;
+    }
+
+    public GridObject SpawnWeapon(UnitGrade grade)
+    {
+        var unitColor = Managers.Random.GetColorForGrade(grade);
+        var prefab = Managers.Resource.Load<GameObject>("Sword1");
+        var go = GameObject.Instantiate(prefab);
+        var weapon = go.GetComponent<Weapon>();
+
+        //ew WeaponData("Sword1",2.5f,50,0.5f);
+        WeaponData weaponData = new WeaponData("Sword", GetPowF((int)grade, 1.2f, 2.5f), Managers.Data.GetSwordDamage(grade), 1f / GetPowF((int)grade, 1.25f, 1f), grade);
+        weapon.Spawn(weaponData);
+
+        // 자식 객체에서 Renderer를 찾기
+        Renderer renderer = go.GetComponentInChildren<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material.color = unitColor;
+            Debug.Log($"{grade} : {weaponData.damage} : {weaponData.range}");
         }
         else
         {

@@ -5,21 +5,22 @@ using static MyDefine;
 public class Weapon : GridObject
 {
     [SerializeField]
-    private float timeBetweenAttacks => weaponData.fireRate; // Attack Speed
+    protected float timeBetweenAttacks => weaponData.fireRate; // Attack Speed
     [SerializeField]
-    private float attackRange => weaponData.range;        // Attack Radius
+    protected float attackRange => weaponData.range;        // Attack Radius
     [SerializeField]
-    private Monster targetEnemy = null;
+    protected Monster targetEnemy = null;
     [SerializeField]
     private GameObject rangeSprite = null;
     [SerializeField]
-    private float attackCounter = 0f;
+    protected float attackCounter = 0f;
     [SerializeField]
-    private bool isAttacking = false;
-    private WeaponData weaponData = null;
-    private Animator anim;
-    [SerializeField] int damage;
-    public void Spawn(WeaponData data)
+    protected bool isAttacking = false;
+    protected WeaponData weaponData = null;
+    protected Animator anim;
+    protected int totalDamage => weaponData.damage * Managers.Upgrade.GetLevel(MyEnums.WeaponType.Sword);
+    [SerializeField] private int currentDamage;
+    public virtual void Spawn(WeaponData data)
     {
         // Data Init
         weaponData = data;
@@ -35,7 +36,7 @@ public class Weapon : GridObject
         }
         rangeSprite.transform.localScale = new Vector3(attackRange, attackRange, attackRange) * 2.5f;
 
-        damage = weaponData.damage;
+        currentDamage = totalDamage;
     }
 
     void Update()
@@ -82,10 +83,16 @@ public class Weapon : GridObject
                 attackCounter = 0;
                 return;
             }
-            anim.Play("Slash_1",-1,0);
+            PlayAnim();
             var projectile = Managers.Resource.Instantiate("Bullet", pooling: true);
-            projectile.GetComponent<Projectile>().Shoot(targetEnemy, transform.position,weaponData.damage);
+            projectile.GetComponent<Projectile>().Shoot(targetEnemy, transform.position, totalDamage, weaponData.range);
+            currentDamage = totalDamage;
         }
+    }
+
+    protected virtual void PlayAnim()
+    {
+        //anim.Play("Slash_1", -1, 0);
     }
 
     private float getTargetDistance(Monster enemy)
@@ -140,7 +147,7 @@ public class Weapon : GridObject
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 
-    public override void DragOn()
+    public override void Dragging()
     {
         rangeSprite.gameObject.SetActive(true);
     }

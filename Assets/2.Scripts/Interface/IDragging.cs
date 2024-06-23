@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface IDragging
 {
-    void DragOn();
+    void Dragging();
     void Drop();
 }
