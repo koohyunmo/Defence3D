@@ -16,6 +16,7 @@ public class Managers : MonoBehaviour
     private StageManager _stage = new StageManager();
     private DataManager _data = new DataManager();
     private UpgradeManager _upgrade = new UpgradeManager();
+    private EffectManager _effect = new EffectManager();
 
     //------------------------//
     //          Core          //
@@ -30,8 +31,8 @@ public class Managers : MonoBehaviour
     public static ResourceManager Resource { get { return Instance?._resource; } }
     public static StageManager Stage { get { return Instance?._stage; } }
     public static DataManager Data { get { return Instance?._data; } }
-
     public static UpgradeManager Upgrade { get { return Instance?._upgrade; } }
+    public static EffectManager Effect { get { return Instance?._effect; } }
 
     public static Managers Instance
     {

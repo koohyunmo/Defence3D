@@ -25,7 +25,7 @@ public class StageManager
 
     public void TestUpStage()
     {
-        stageCount = stageCount++;
+        stageCount++;
     }
 
     public void TestDownStage()
@@ -38,6 +38,11 @@ public class StageManager
         stagetTimer = STAGE_DELAY;;
         while (true)
         {
+            if(Managers.Object.GetMonsterCount() >= 100)
+            {
+                Debug.Log("Game Over");
+            }
+
             yield return new WaitForSeconds(0.75f);
             stagetTimer -= 0.75f;
             Managers.Object.SpawnMosnter();
@@ -47,6 +52,7 @@ public class StageManager
             {
                 stagetTimer = STAGE_DELAY;
                 stageCount++;
+                Managers.Data.DisplayHP(stageCount);
             }
         }
     }

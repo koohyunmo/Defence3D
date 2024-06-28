@@ -20,7 +20,7 @@ public class WeaponData
         this.weaponName = name;
         this.range = range;
         this.damage = damage;
-        this.fireRate = fireRate;
+        this.fireRate = 1/fireRate;
         this.level = 1;  // 초기 레벨은 1로 설정
         this.grade = grade;
     }
@@ -30,7 +30,7 @@ public class WeaponData
         this.weaponName = data.weaponName;
         this.range = data.range;
         this.damage = data.damage;
-        this.fireRate = data.fireRate;
+        this.fireRate = 1/data.fireRate;
         this.level = data.level;  // 초기 레벨은 1로 설정
         this.grade = data.grade;
     }
@@ -39,8 +39,8 @@ public class WeaponData
     public void Upgrade()
     {
         level++;
-        damage = (int)(damage *1.2f);  // 공격력 20% 증가
-        range *= 1.1f;  // 사거리 10% 증가
-        fireRate *= 1.1f;  // 공격 속도 10% 증가
+        damage = (int)(damage *2f);  // 공격력 200% 증가
+        range *= 1.2f;  // 사거리 20% 증가
+        fireRate *= 1.2f;  // 공격 속도 20% 증가
     }
 }

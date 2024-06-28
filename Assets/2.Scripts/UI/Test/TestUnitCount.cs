@@ -12,6 +12,6 @@ public class TestUnitCount : MonoBehaviour
     }
     private void Update()
     {
-        unitCountText.text = Managers.Object.monsters.Count.ToString();
+        unitCountText.text = Managers.Object.GetMonsterCountStr();
     }
 }

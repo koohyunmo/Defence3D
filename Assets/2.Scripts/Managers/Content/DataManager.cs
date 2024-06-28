@@ -47,4 +47,23 @@ public class DataManager
 
         return -1;
     }
+
+    public int CalculateHP(float level)
+    {
+        // Coefficients of the polynomial
+        float a = 0.1151f;
+        float b = -5.6385f;
+        float c = 105.85f;
+        float d = -306.88f;
+
+        // Calculate y using the given polynomial equation
+        float y = a * Mathf.Pow(level, 3) + b * Mathf.Pow(level, 2) + c * level + d;
+        y = Mathf.Max(10, y);
+        return (int)y;
+    }
+
+    public void DisplayHP(int stageCount)
+    {
+        Debug.Log(CalculateHP(stageCount));
+    }
 }

@@ -46,6 +46,7 @@ public class Monster : MonoBehaviour
 
         hp = Math.Max(0,hp);
         hpBar.SetHpBar(hp, maxHp);
+        Managers.Effect.DamageTextParticle(damage, transform.position + Vector3.up);
 
         if (hp <= 0)
         {

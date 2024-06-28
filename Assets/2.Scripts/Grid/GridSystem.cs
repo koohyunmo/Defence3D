@@ -68,10 +68,9 @@ public class GridSystem
     }
 
     /// <summary>
-    /// 그리드 오브젝트 스왑 or 위치 옮기기
-    /// @detail 움직일 칸이 빈칸인경우(move) + 움직일 칸이 빈칸이 아닌경우(swap)
-    /// @bug index 관리해줘여함
-    /// @version 24-06-05 v01
+    /// 그리드 오브젝트 스왑 or 위치 옮기기 + 강화
+    /// @detail 움직일 칸이 빈칸인경우(move) + 움직일 칸이 빈칸이 아닌경우(swap) + 같은 무기일경우 강화
+    /// @version 24-06-27 v02
     /// </summary>
     /// <param name="targetPos">현재 드래그중인 오브젝트의 그리드 위치</param>
     /// <param name="selectedObj">현재 드래그중인 오브젝트</param>
@@ -87,10 +86,26 @@ public class GridSystem
         if (OutOfBounds(sX, sZ)) return false;
 
         var targetObj = gridObj[tX, tZ];
-        var sObj = gridObj[sX, sZ];
-        if(sObj == null)
+        var selectedObj = gridObj[sX, sZ];
+        if(selectedObj == null)
         {
             Debug.LogError("sObj is null");
+            return false;
+        }
+
+        Weapon targetWeapon = null;
+        Weapon selectedWeapon = null;
+        if (targetObj)
+        {
+            targetWeapon = targetObj.GetComponent<Weapon>();
+            selectedWeapon = selectedObj.GetComponent<Weapon>();
+        }
+
+
+        if(targetWeapon  && selectedWeapon && 
+            targetWeapon.GetWeaponData().weaponName.Equals(selectedWeapon.GetWeaponData().weaponName))
+        {
+            Debug.Log("강화시도");
             return false;
         }
 
@@ -101,13 +116,13 @@ public class GridSystem
             gridObj[tX,tZ].transform.position = GetGridPosition(sX,sZ);
 
             gridObj[sX, sZ] = targetObj;
-            gridObj[tX, tZ] = sObj;
+            gridObj[tX, tZ] = selectedObj;
         }
         // Move
         else
         {
-            sObj.transform.position = GetGridPosition(tX, tZ);
-            gridObj[tX, tZ] = sObj;
+            selectedObj.transform.position = GetGridPosition(tX, tZ);
+            gridObj[tX, tZ] = selectedObj;
             gridObj[sX, sZ] = null;
             indexStack.Enqueue(GetIndex(sX,sZ));
         }

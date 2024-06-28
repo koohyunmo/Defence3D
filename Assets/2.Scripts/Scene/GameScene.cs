@@ -8,15 +8,16 @@ public class GameScene : MonoBehaviour
     private void Start()
     {
 
-        Managers.Resource.LoadAllAsync<Object>("prefab", (key, count, totalCount) =>
-        {
-            Debug.Log($"{key} {count}/{totalCount}");
+         Managers.Resource.LoadAllAsync<Object>("prefab", (key, count, totalCount) =>
+         {
+             Debug.Log($"{key} {count}/{totalCount}");
 
             if (count == totalCount)
-            {
+             {
                 Debug.Log("Load All");
-            }
-        });
+                Managers.Effect.Init();
+             }
+         });
 
         StartCoroutine(co_MonsterSpawn());
     }

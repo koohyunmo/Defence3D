@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Grabber : MonoBehaviour
 {
-    GridObject selectedObject;
+    [SerializeField] GridObject selectedObject;
     Vector3 originalPos = Vector3.zero;
     private void Update()
     {

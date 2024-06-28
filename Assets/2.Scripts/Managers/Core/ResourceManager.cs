@@ -12,7 +12,7 @@ public class ResourceManager
 
 	public void Init()
 	{
-
+		
 	}
 
 	public T Load<T>(string key) where T : Object

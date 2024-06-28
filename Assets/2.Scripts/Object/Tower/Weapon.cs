@@ -39,6 +39,11 @@ public class Weapon : GridObject
         currentDamage = totalDamage;
     }
 
+    public WeaponData GetWeaponData()
+    {
+        return new WeaponData(weaponData); // 방어적 복사
+    }
+
     void Update()
     {
         if (targetEnemy == null)
@@ -112,7 +117,7 @@ public class Weapon : GridObject
     {
         List<Monster> enemiesInRange = new List<Monster>();
 
-        foreach (Monster enemy in Managers.Object.monsters)
+        foreach (Monster enemy in Managers.Object.GetMonsters())
         {
             if (enemy.isDead) continue;
 

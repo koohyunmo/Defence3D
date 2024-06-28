@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.iOS;
 using UnityEngine;
 
 public class TestGrid : MonoBehaviour
@@ -72,7 +71,7 @@ public class TestGrid : MonoBehaviour
             }
         }
     }
-
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (corners[0] != Vector3.zero)
@@ -80,10 +79,11 @@ public class TestGrid : MonoBehaviour
             for (int i = 0; i < corners.Length; i++)
             {
                 Gizmos.DrawWireCube(corners[i], Vector3.one);
-#if UNITY_EDITOR
+
                 Handles.Label(corners[i], $"Path[{i}]");
-#endif
+
             }
         }
     }
+#endif
 }
