@@ -10,8 +10,9 @@ public class TestGrid : MonoBehaviour
     private Vector3[] corners = new Vector3[4];
 
 
-    void Start()
+    IEnumerator Start()
     {
+        yield return new WaitForSeconds(1f);
         // Plane의 MeshRenderer를 가져옵니다.
         MeshRenderer meshRenderer = plane.GetComponent<MeshRenderer>();
 

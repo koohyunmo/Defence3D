@@ -11,9 +11,12 @@ public class GridSystem
     private float cellSizeX;
     private float cellSizeZ;
     private GridObject[,] gridObj;
+    private GridCell[,] gridCell;
     private Vector3 originPosition;
     private GameObject root = null;
-    private Queue<int> indexStack  = new();
+    private GameObject cellRoot = null;
+    private Queue<int> indexStack = new();
+    private GridCell selectedCell = null;
 
     public GridSystem(int width, int height, float cellSize, Vector3 originPosition)
     {
@@ -23,35 +26,11 @@ public class GridSystem
         this.cellSizeZ = cellSize;
         this.originPosition = originPosition;
         root = new GameObject(name: "GridRoot");
+        cellRoot = new GameObject(name: "GridCellRoot");
 
         gridArray = new int[width, height];
         gridObj = new GridObject[width, height];
-
-        for (int x = 0; x < gridArray.GetLength(0); x++)
-        {
-            for (int z = 0; z < gridArray.GetLength(1); z++)
-            {
-                indexStack.Enqueue(GetIndex(x,z));
-                Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x, z + 1), Color.red, 100f);
-                Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x + 1, z), Color.red, 100f);
-            }
-        }
-
-        Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.red, 100f);
-        Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.red, 100f);
-    }
-
-    public GridSystem(int width, int height, float cellSizeX,float cellSizeZ, Vector3 originPosition)
-    {
-        this.width = width;
-        this.height = height;
-        this.cellSizeX = cellSizeX;
-        this.cellSizeZ = cellSizeZ;
-        this.originPosition = originPosition;
-        root = new GameObject(name: "GridRoot");
-
-        gridArray = new int[width, height];
-        gridObj = new GridObject[width, height];
+        gridCell = new GridCell[width, height];
 
         for (int x = 0; x < gridArray.GetLength(0); x++)
         {
@@ -65,7 +44,56 @@ public class GridSystem
 
         Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.red, 100f);
         Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.red, 100f);
+        MakeCell();
     }
+
+    public GridSystem(int width, int height, float cellSizeX, float cellSizeZ, Vector3 originPosition)
+    {
+        this.width = width;
+        this.height = height;
+        this.cellSizeX = cellSizeX;
+        this.cellSizeZ = cellSizeZ;
+        this.originPosition = originPosition;
+        root = new GameObject(name: "GridRoot");
+        cellRoot = new GameObject(name: "GridCellRoot");
+
+        gridArray = new int[width, height];
+        gridObj = new GridObject[width, height];
+        gridCell = new GridCell[width, height];
+
+        for (int x = 0; x < gridArray.GetLength(0); x++)
+        {
+            for (int z = 0; z < gridArray.GetLength(1); z++)
+            {
+                indexStack.Enqueue(GetIndex(x, z));
+                Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x, z + 1), Color.red, 100f);
+                Debug.DrawLine(GetWorldPosition(x, z), GetWorldPosition(x + 1, z), Color.red, 100f);
+
+            }
+        }
+
+        Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.red, 100f);
+        Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.red, 100f);
+        MakeCell();
+    }
+
+    private void MakeCell()
+    {
+        for (int x = 0; x < gridArray.GetLength(0); x++)
+        {
+            for (int z = 0; z < gridArray.GetLength(1); z++)
+            {
+                var cell = Managers.Resource.Instantiate("GridCell");
+                cell.transform.position = GetGridCellPos(x, z, 0.25f);
+                cell.transform.SetParent(cellRoot.transform);
+                gridCell[x, z] = cell.GetComponent<GridCell>();
+            }
+        }
+    }
+
+    /*-----------------
+    Grid Unit 관련 함수
+    ------------------*/
 
     /// <summary>
     /// 그리드 오브젝트 스왑 or 위치 옮기기 + 강화
@@ -75,7 +103,7 @@ public class GridSystem
     /// <param name="targetPos">현재 드래그중인 오브젝트의 그리드 위치</param>
     /// <param name="selectedObj">현재 드래그중인 오브젝트</param>
     /// <returns></returns>
-    public bool Swap(Vector3 targetPos,Vector3 originalPos)
+    public bool Swap(Vector3 targetPos, Vector3 originalPos)
     {
         int tX = -1, tZ = -1;
         GetXZ(targetPos, out tX, out tZ);
@@ -87,7 +115,7 @@ public class GridSystem
 
         var targetObj = gridObj[tX, tZ];
         var selectedObj = gridObj[sX, sZ];
-        if(selectedObj == null)
+        if (selectedObj == null)
         {
             Debug.LogError("sObj is null");
             return false;
@@ -102,7 +130,7 @@ public class GridSystem
         }
 
 
-        if(targetWeapon  && selectedWeapon && 
+        if (targetWeapon && selectedWeapon &&
             targetWeapon.GetWeaponData().weaponName.Equals(selectedWeapon.GetWeaponData().weaponName))
         {
             Debug.Log("강화시도");
@@ -112,8 +140,8 @@ public class GridSystem
         // 스왑
         if (targetObj)
         {
-            gridObj[sX,sZ].transform.position = GetGridPosition(tX,tZ);
-            gridObj[tX,tZ].transform.position = GetGridPosition(sX,sZ);
+            gridObj[sX, sZ].transform.position = GetGridPosition(tX, tZ);
+            gridObj[tX, tZ].transform.position = GetGridPosition(sX, sZ);
 
             gridObj[sX, sZ] = targetObj;
             gridObj[tX, tZ] = selectedObj;
@@ -124,7 +152,10 @@ public class GridSystem
             selectedObj.transform.position = GetGridPosition(tX, tZ);
             gridObj[tX, tZ] = selectedObj;
             gridObj[sX, sZ] = null;
-            indexStack.Enqueue(GetIndex(sX,sZ));
+            indexStack.Enqueue(GetIndex(sX, sZ));
+
+            gridCell[tX, tZ].TakeUpCell();
+            gridCell[sX, sZ].ResetCell();
         }
 
         return true;
@@ -141,14 +172,15 @@ public class GridSystem
             int z = xz.Item2;
 
             if (OutOfBounds(x, z)) return false; // 밤위 밖 탈출
-            if (gridObj[x, z]) continue; 
+            if (gridObj[x, z]) continue;
 
             SetValue(x, z, 1);
             CreateUnit(x, z);
+            gridCell[x, z].TakeUpCell();
             return true;
         }
 
-        return false; 
+        return false;
     }
 
     public bool AddUnit(UnitGrade grade)
@@ -165,7 +197,8 @@ public class GridSystem
             if (gridObj[x, z]) continue;
 
             SetValue(x, z, 1);
-            CreateUnit(x, z,grade);
+            CreateUnit(x, z, grade);
+            gridCell[x, z].TakeUpCell();
             return true;
         }
 
@@ -173,20 +206,20 @@ public class GridSystem
     }
     private void CreateUnit(int x, int z)
     {
-        var weapon  = Managers.Object.SpawnWeapon();
+        var weapon = Managers.Object.SpawnWeapon();
         weapon.transform.SetParent(root.transform);
-        Vector3 newPos = GetWorldPosition(x, z) + new Vector3(cellSizeX, 0, cellSizeZ) * 0.5f;
+        Vector3 newPos = GetGridCellPos(x, z);
         weapon.transform.position = newPos;
 
         gridObj[x, z] = weapon;
         gridObj[x, z].name = $"{x},{z} : {z + x * height}";
         SetValue(x, z, 1);
     }
-    private void CreateUnit(int x, int z,UnitGrade grade)
+    private void CreateUnit(int x, int z, UnitGrade grade)
     {
         var weapon = Managers.Object.SpawnWeapon(grade);
         weapon.transform.SetParent(root.transform);
-        Vector3 newPos = GetWorldPosition(x, z) + new Vector3(cellSizeX, 0, cellSizeZ) * 0.5f;
+        Vector3 newPos = GetGridCellPos(x, z);
         weapon.transform.position = newPos;
 
         gridObj[x, z] = weapon;
@@ -199,14 +232,103 @@ public class GridSystem
     {
         int x = -1, z = -1;
         GetXZ(worldPosition, out x, out z);
-        if(OutOfBounds(x,z)) return false;
-        if(gridObj[x,z] == null) return false;
+        if (OutOfBounds(x, z)) return false;
+        if (gridObj[x, z] == null) return false;
 
         GameObject.Destroy(gridObj[x, z].gameObject);
         gridObj[x, z] = null;
-        indexStack.Enqueue(GetIndex(x,z));
+        indexStack.Enqueue(GetIndex(x, z));
         SetValue(x, z, 0);
+        gridCell[x, z].ResetCell();
         return true;
+    }
+
+    /*-----------
+    그리드 UX 함수
+    -------------*/
+    /// <summary>
+    /// 선택된 무기가 움직일 곳(마우스 포인터 위치)을 보여줄 UX 함수
+    /// @bug 마우스를 떗을때 병합색->빨간색 처리해줘야함
+    /// @date 24-07-01
+    /// @version 2
+    /// </summary>
+    /// <param name="pointPos">마우스 포인터 위치</param>
+    /// <param name="originalPos">오리지널 쉘 위치</param>
+    public void GetPointToGrid(Vector3 pointPos, Vector3 originalPos)
+    {
+        int pX = -1, pZ = -1;
+        GetXZ(pointPos, out pX, out pZ);
+        int oX = -1, oZ = -1;
+        GetXZ(originalPos, out oX, out oZ);
+
+        if (OutOfBounds(pX, pZ) || OutOfBounds(oX, oZ))
+        {
+            ResetCell();
+            return;
+        }
+
+        // 선택된 무기의 원래 그리드 위치와 현재 마우스 포인터의 그리드 위치가 같은 경우
+        if (pX == oX && pZ == oZ)
+        {
+            ResetCell();
+            return;
+        }
+
+        // 이미 선택된 셀의 색상을 원래대로 복원
+        if (selectedCell != null)
+        {
+            int sX = -1, sZ = -1;
+            GetXZ(selectedCell.transform.position, out sX, out sZ);
+            if(gridObj[sX,sZ] != null)
+            {
+                selectedCell.TakeUpCell();
+            }
+            else
+            {
+                selectedCell.ResetCell();
+            }
+            selectedCell = null;
+        }
+
+        // 선택된 그리드 셀을 새로운 셀로 업데이트
+        if (gridObj[pX, pZ] == null)
+        {
+            selectedCell = gridCell[pX, pZ];
+            gridCell[pX, pZ].SelectedCell();
+        }
+        // 선택된 셀에 이미 타워가 있는 경우 병합 색상을 표시
+        else
+        {
+            selectedCell = gridCell[pX, pZ];
+            gridCell[pX, pZ].MergeCell();
+        }
+    }
+
+    private void ResetCell()
+    {
+        if (selectedCell == null) return;
+
+        int x = -1, z = -1;
+        GetXZ(selectedCell.transform.position, out x, out z);
+
+        if (OutOfBounds(x, z)) return;
+
+        selectedCell.ResetCell();
+        selectedCell = null;
+
+        if (gridObj[x, z])
+        {
+            gridCell[x, z].TakeUpCell();
+        }
+    }
+
+
+    /*-------------
+    Grid Helper 함수
+    --------------*/
+    private Vector3 GetGridCellPos(int x, int z, float y = 0)
+    {
+        return GetWorldPosition(x, z) + new Vector3(cellSizeX, y, cellSizeZ) * 0.5f;
     }
 
     private Vector3 GetGridPosition(int x, int z)
@@ -249,7 +371,7 @@ public class GridSystem
     {
         int x, z;
         GetXZ(worldPosition, out x, out z);
-        return GetIndex(x,z);
+        return GetIndex(x, z);
     }
     public int GetIndex(int x, int z)
     {
@@ -259,7 +381,7 @@ public class GridSystem
     {
         int x = index / height;
         int z = index % height;
-        return (x,z);
+        return (x, z);
     }
 
     public int GetValue(int x, int z)

@@ -72,6 +72,7 @@ public class Grabber : MonoBehaviour
             Vector3 position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.WorldToScreenPoint(selectedObject.transform.position).z);
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(position);
             selectedObject.transform.position = new Vector3(worldPosition.x, .25f, worldPosition.z);
+            Managers.Grid.GetGrid().GetPointToGrid(worldPosition, originalPos);
 
             if (Input.GetMouseButtonDown(1))
             {

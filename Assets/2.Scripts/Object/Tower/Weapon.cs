@@ -34,7 +34,8 @@ public class Weapon : GridObject
             rangeObj.gameObject.SetActive(false);
             rangeSprite = rangeObj;
         }
-        rangeSprite.transform.localScale = new Vector3(attackRange, attackRange, attackRange) * 2.5f;
+        //rangeSprite.transform.localScale = new Vector3(attackRange, attackRange, attackRange) * 2.5f;
+        rangeSprite.transform.localScale = new Vector3(attackRange, attackRange, attackRange) * 0.7f;
 
         currentDamage = totalDamage;
     }
@@ -148,7 +149,8 @@ public class Weapon : GridObject
 
     private void OnDrawGizmos()
     {
-        if(weaponData != null)
+        if(weaponData == null) return;
+        Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 
