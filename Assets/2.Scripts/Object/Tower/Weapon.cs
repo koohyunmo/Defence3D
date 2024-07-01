@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static MyDefine;
+using static MyEnums;
 public class Weapon : GridObject
 {
     [SerializeField]
@@ -20,6 +21,13 @@ public class Weapon : GridObject
     protected Animator anim;
     protected int totalDamage => weaponData.damage * Managers.Upgrade.GetLevel(MyEnums.WeaponType.Sword);
     [SerializeField] private int currentDamage;
+
+    [SerializeField] protected WeaponType weaponType = WeaponType.None;
+    [SerializeField] protected UnitGrade grade = UnitGrade.None;
+
+    /*------------
+        초기 설정
+    --------------*/
     public virtual void Spawn(WeaponData data)
     {
         // Data Init
@@ -39,12 +47,9 @@ public class Weapon : GridObject
 
         currentDamage = totalDamage;
     }
-
-    public WeaponData GetWeaponData()
-    {
-        return new WeaponData(weaponData); // 방어적 복사
-    }
-
+    /*-------------
+        업데이트
+    ---------------*/
     void Update()
     {
         if (targetEnemy == null)
@@ -78,7 +83,9 @@ public class Weapon : GridObject
             isAttacking = false;
         }
     }
-
+    /*---------------
+        공격관련 함수
+    -----------------*/
     public void Attack()
     {
         if (targetEnemy != null)
@@ -90,17 +97,23 @@ public class Weapon : GridObject
                 return;
             }
             PlayAnim();
-            var projectile = Managers.Resource.Instantiate("Bullet", pooling: true);
-            projectile.GetComponent<Projectile>().Shoot(targetEnemy, transform.position, totalDamage, weaponData.range);
+            AttackDetail();
             currentDamage = totalDamage;
         }
+    }
+
+    protected virtual void AttackDetail()
+    {
+        Debug.LogError("공격 방식을 설정해주세요.");
     }
 
     protected virtual void PlayAnim()
     {
         //anim.Play("Slash_1", -1, 0);
     }
-
+    /*------------
+    탐색 관련 함수
+    --------------*/
     private float getTargetDistance(Monster enemy)
     {
         if (enemy == null)
@@ -146,14 +159,49 @@ public class Weapon : GridObject
         }
         return closestEnemy;
     }
-
-    private void OnDrawGizmos()
+    /*-------------
+        헬퍼 함수
+    ---------------*/
+    public WeaponData GetWeaponData()
     {
-        if(weaponData == null) return;
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        return new WeaponData(weaponData); // 방어적 복사
     }
+    protected void LookAtTarget(Transform target, Transform model)
+    {
+        if(target == null) return;
+        if(model == null) return;
 
+        // 타겟의 방향을 계산
+        Vector3 directionToTarget = (target.position - model.position).normalized;
+
+        // 타겟을 향한 회전값 계산
+        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+        targetRotation.x = 0f;
+        targetRotation.z = 0f;
+
+        // 모델의 회전
+        model.rotation = targetRotation;
+
+    }
+    protected void LookAtPosition(Vector3 pos, Transform model)
+    {
+        if (model == null) return;
+
+        // 타겟의 방향을 계산
+        Vector3 directionToTarget = (pos - model.position).normalized;
+
+        // 타겟을 향한 회전값 계산
+        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+        targetRotation.x = 0f;
+        targetRotation.z = 0f;
+
+        // 모델의 회전
+        model.rotation = targetRotation;
+
+    }
+    /*------------
+        인터페이스
+    --------------*/
     public override void Dragging()
     {
         rangeSprite.gameObject.SetActive(true);
@@ -163,4 +211,12 @@ public class Weapon : GridObject
     {
         rangeSprite.gameObject.SetActive(false);
     }
+
+    private void OnDrawGizmos()
+    {
+        if (weaponData == null) return;
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+
 }

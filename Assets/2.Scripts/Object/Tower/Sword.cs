@@ -5,8 +5,7 @@ using static MyEnums;
 
 public class Sword : Weapon
 {
-    [SerializeField] WeaponType weaponType;
-    [SerializeField] UnitGrade grade;
+
     public override void Spawn(WeaponData data)
     {
         base.Spawn(data);
@@ -14,10 +13,13 @@ public class Sword : Weapon
         grade = data.grade;
 
     }
-
     protected override void PlayAnim()
     {
         anim.Play("Slash_1", -1, 0);
-
+    }
+    protected override void AttackDetail()
+    {
+        var projectile = Managers.Resource.Instantiate("Slash", pooling: true);
+        projectile.GetComponent<Projectile>().Fire(targetEnemy, transform.position, totalDamage, weaponData.range);
     }
 }

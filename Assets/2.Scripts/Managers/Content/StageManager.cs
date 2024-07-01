@@ -8,6 +8,8 @@ public class StageManager
 {
     private float stagetTimer = STAGE_DELAY;
     private int stageCount = 1;
+    private float spawnDelay = 0.75f;
+    private float spawnCoolTime = 0;
     public void StagetStart()
     {
         Managers.Instance.StartCoroutine(co_MonsterSpawn());
@@ -43,9 +45,13 @@ public class StageManager
                 Debug.Log("Game Over");
             }
 
-            yield return new WaitForSeconds(0.75f);
-            stagetTimer -= 0.75f;
-            Managers.Object.SpawnMosnter();
+            stagetTimer -= Time.deltaTime;
+            if(CURRENT_TIME > spawnCoolTime)
+            {
+                Managers.Object.SpawnMosnter();
+                spawnCoolTime = CURRENT_TIME + spawnDelay; 
+            }
+    
 
             // 스테이지 변경
             if (stagetTimer < 1)
@@ -54,6 +60,8 @@ public class StageManager
                 stageCount++;
                 Managers.Data.DisplayHP(stageCount);
             }
+
+            yield return null;
         }
     }
 }

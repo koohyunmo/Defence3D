@@ -89,6 +89,8 @@ public class GridSystem
                 gridCell[x, z] = cell.GetComponent<GridCell>();
             }
         }
+
+        cellRoot.SetActive(false);
     }
 
     /*-----------------
@@ -246,6 +248,14 @@ public class GridSystem
     /*-----------
     그리드 UX 함수
     -------------*/
+    public void GridCellViewerOn()
+    {
+        cellRoot.SetActive(true);
+    }
+    public void GridCellViewerOff()
+    {
+        cellRoot.SetActive(false);
+    }
     /// <summary>
     /// 선택된 무기가 움직일 곳(마우스 포인터 위치)을 보여줄 UX 함수
     /// @bug 마우스를 떗을때 병합색->빨간색 처리해줘야함

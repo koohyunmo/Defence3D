@@ -26,4 +26,12 @@ public class MyEnums
         Bow = 2,
         Axe = 3
     }
+
+    public enum ProjectileType
+    {
+        None = 0,
+        Arrow = 1,
+        Slash = 2,
+        Smash = 3,
+    }
 }

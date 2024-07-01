@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static MyDefine;
 
 public class Monster : MonoBehaviour
 {
     TestFollowPath movement;
     public bool isDead = false;
     int hp {get => data.hp; set => data.hp = value;}
+
     [SerializeField] int maxHp;
 
     MonsterData data = null;
@@ -38,6 +40,7 @@ public class Monster : MonoBehaviour
 
         movement.SetPosition();
         maxHp = data.maxHp;
+        gameObject.tag = MONSTER_TAG;
     }
 
     public void OnDamage(int damage)

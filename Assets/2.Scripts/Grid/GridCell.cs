@@ -7,7 +7,7 @@ public class GridCell : MonoBehaviour
 {
     Material mat;
 
-    void Start()
+    void Awake()
     {
         mat = gameObject.GetComponent<Renderer>().material;
         mat.color = GRID_CELL_EMPTY;

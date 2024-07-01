@@ -39,6 +39,7 @@ public class Grabber : MonoBehaviour
                 {
                     originalPos = selectedObject.transform.position;
                     selectedObject.Dragging();
+                    Managers.Grid.GetGrid().GridCellViewerOn();
                 }
 
             }
@@ -63,6 +64,7 @@ public class Grabber : MonoBehaviour
 
         Cursor.visible = true;
         selectedObject = null;
+        Managers.Grid.GetGrid().GridCellViewerOff();
     }
 
     private void MouseDrag()
