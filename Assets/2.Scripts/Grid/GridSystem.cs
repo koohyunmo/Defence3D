@@ -84,7 +84,7 @@ public class GridSystem
             for (int z = 0; z < gridArray.GetLength(1); z++)
             {
                 var cell = Managers.Resource.Instantiate("GridCell");
-                cell.transform.position = GetGridCellPos(x, z, 0.25f);
+                cell.transform.position = GetGridCellPosition(x, z, 0.25f);
                 cell.transform.SetParent(cellRoot.transform);
                 gridCell[x, z] = cell.GetComponent<GridCell>();
             }
@@ -119,7 +119,7 @@ public class GridSystem
         var selectedObj = gridObj[sX, sZ];
         if (selectedObj == null)
         {
-            Debug.LogError("sObj is null");
+            Debug.LogError("selectedObj is null");
             return false;
         }
 
@@ -131,19 +131,20 @@ public class GridSystem
             selectedWeapon = selectedObj.GetComponent<Weapon>();
         }
 
-
+        // 강화 시도
         if (targetWeapon && selectedWeapon &&
-            targetWeapon.GetWeaponData().weaponName.Equals(selectedWeapon.GetWeaponData().weaponName))
+            targetWeapon.GetWeaponData().Equals(selectedWeapon.GetWeaponData()))
         {
-            Debug.Log("강화시도");
+            Remove(originalPos);
+            Managers.Reinforce.Reinforce(selectedWeapon,targetWeapon);
             return false;
         }
 
         // 스왑
         if (targetObj)
         {
-            gridObj[sX, sZ].transform.position = GetGridPosition(tX, tZ);
-            gridObj[tX, tZ].transform.position = GetGridPosition(sX, sZ);
+            gridObj[sX, sZ].transform.position = GetGridCellPosition(tX, tZ);
+            gridObj[tX, tZ].transform.position = GetGridCellPosition(sX, sZ);
 
             gridObj[sX, sZ] = targetObj;
             gridObj[tX, tZ] = selectedObj;
@@ -151,7 +152,7 @@ public class GridSystem
         // Move
         else
         {
-            selectedObj.transform.position = GetGridPosition(tX, tZ);
+            selectedObj.transform.position = GetGridCellPosition(tX, tZ);
             gridObj[tX, tZ] = selectedObj;
             gridObj[sX, sZ] = null;
             indexStack.Enqueue(GetIndex(sX, sZ));
@@ -210,7 +211,7 @@ public class GridSystem
     {
         var weapon = Managers.Object.SpawnWeapon();
         weapon.transform.SetParent(root.transform);
-        Vector3 newPos = GetGridCellPos(x, z);
+        Vector3 newPos = GetGridCellPosition(x, z);
         weapon.transform.position = newPos;
 
         gridObj[x, z] = weapon;
@@ -221,7 +222,7 @@ public class GridSystem
     {
         var weapon = Managers.Object.SpawnWeapon(grade);
         weapon.transform.SetParent(root.transform);
-        Vector3 newPos = GetGridCellPos(x, z);
+        Vector3 newPos = GetGridCellPosition(x, z);
         weapon.transform.position = newPos;
 
         gridObj[x, z] = weapon;
@@ -258,7 +259,6 @@ public class GridSystem
     }
     /// <summary>
     /// 선택된 무기가 움직일 곳(마우스 포인터 위치)을 보여줄 UX 함수
-    /// @bug 마우스를 떗을때 병합색->빨간색 처리해줘야함
     /// @date 24-07-01
     /// @version 2
     /// </summary>
@@ -336,12 +336,12 @@ public class GridSystem
     /*-------------
     Grid Helper 함수
     --------------*/
-    private Vector3 GetGridCellPos(int x, int z, float y = 0)
+    private Vector3 GetGridCellPosition(int x, int z, float y)
     {
         return GetWorldPosition(x, z) + new Vector3(cellSizeX, y, cellSizeZ) * 0.5f;
     }
 
-    private Vector3 GetGridPosition(int x, int z)
+    private Vector3 GetGridCellPosition(int x, int z)
     {
         return GetWorldPosition(x, z) + new Vector3(cellSizeX, 0, cellSizeZ) * 0.5f;
     }

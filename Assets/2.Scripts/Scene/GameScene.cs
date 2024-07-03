@@ -16,6 +16,9 @@ public class GameScene : MonoBehaviour
              {
                 Debug.Log("Load All");
                 Managers.Effect.Init();
+                CSVParser parser = new CSVParser();
+                parser.ParseData();
+                parser = null;
              }
          });
 

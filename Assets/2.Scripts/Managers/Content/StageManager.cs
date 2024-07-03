@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using static MyDefine;
 
@@ -8,8 +9,9 @@ public class StageManager
 {
     private float stagetTimer = STAGE_DELAY;
     private int stageCount = 1;
-    private float spawnDelay = 0.75f;
+    private float spawnDelay = 1f / 2;
     private float spawnCoolTime = 0;
+    private bool bossSpawn = false;
     public void StagetStart()
     {
         Managers.Instance.StartCoroutine(co_MonsterSpawn());
@@ -37,7 +39,7 @@ public class StageManager
 
     IEnumerator co_MonsterSpawn()
     {
-        stagetTimer = STAGE_DELAY;;
+        stagetTimer = STAGE_DELAY;
         while (true)
         {
             if(Managers.Object.GetMonsterCount() >= 100)
@@ -49,9 +51,18 @@ public class StageManager
             if(CURRENT_TIME > spawnCoolTime)
             {
                 Managers.Object.SpawnMosnter();
-                spawnCoolTime = CURRENT_TIME + spawnDelay; 
+                spawnCoolTime = CURRENT_TIME + spawnDelay;
+                if(stageCount % 10 == 0 && bossSpawn == false)
+                {
+                    bossSpawn = true;
+                    Managers.Object.SpawnBoss();
+                    Debug.Log("보스 스톤");
+                }
+                else if(bossSpawn && stageCount % 10 != 0)
+                {
+                    bossSpawn = false;
+                }
             }
-    
 
             // 스테이지 변경
             if (stagetTimer < 1)

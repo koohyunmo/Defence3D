@@ -8,6 +8,17 @@ public class Grabber : MonoBehaviour
 {
     [SerializeField] GridObject selectedObject;
     Vector3 originalPos = Vector3.zero;
+    LineRenderer lineRenderer = null;
+
+    private void Start()
+    {
+        lineRenderer = gameObject.GetComponent<LineRenderer>();
+        if (lineRenderer == null)
+        {
+            lineRenderer = gameObject.AddComponent<LineRenderer>();
+        }
+        ConfigureLineRenderer();
+    }
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -65,6 +76,7 @@ public class Grabber : MonoBehaviour
         Cursor.visible = true;
         selectedObject = null;
         Managers.Grid.GetGrid().GridCellViewerOff();
+        lineRenderer.positionCount = 0; // Clear line
     }
 
     private void MouseDrag()
@@ -75,6 +87,9 @@ public class Grabber : MonoBehaviour
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(position);
             selectedObject.transform.position = new Vector3(worldPosition.x, .25f, worldPosition.z);
             Managers.Grid.GetGrid().GetPointToGrid(worldPosition, originalPos);
+
+            // 라인랜더러
+            DrawLine(originalPos, selectedObject.transform.position);
 
             if (Input.GetMouseButtonDown(1))
             {
@@ -115,5 +130,25 @@ public class Grabber : MonoBehaviour
 
         return hit;
 
+    }
+
+    private void DrawLine(Vector3 startLine, Vector3 endLine)
+    {
+        lineRenderer.positionCount = 2;
+        endLine.y += 1;
+        lineRenderer.SetPosition(0, startLine);
+        lineRenderer.SetPosition(1, endLine);
+    }
+
+    private void ConfigureLineRenderer()
+    {
+        lineRenderer.startWidth = 0.1f;
+        lineRenderer.endWidth = 0.1f;
+        //lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.receiveShadows = false;
+        lineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        lineRenderer.startColor = Color.red;
+        lineRenderer.endColor = Color.red;
+        lineRenderer.positionCount = 0;
     }
 }

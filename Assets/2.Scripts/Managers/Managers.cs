@@ -17,6 +17,7 @@ public class Managers : MonoBehaviour
     private DataManager _data = new DataManager();
     private UpgradeManager _upgrade = new UpgradeManager();
     private EffectManager _effect = new EffectManager();
+    private ReinforceManager _reinforce = new ReinforceManager();
 
     //------------------------//
     //          Core          //
@@ -33,6 +34,7 @@ public class Managers : MonoBehaviour
     public static DataManager Data { get { return Instance?._data; } }
     public static UpgradeManager Upgrade { get { return Instance?._upgrade; } }
     public static EffectManager Effect { get { return Instance?._effect; } }
+    public static ReinforceManager Reinforce {get {return Instance?._reinforce;}}
 
     public static Managers Instance
     {

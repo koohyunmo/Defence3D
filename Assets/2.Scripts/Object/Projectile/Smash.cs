@@ -6,10 +6,10 @@ using static MyDefine;
 
 public class Smash : Projectile
 {
-    public override void Fire(Monster target, Vector3 firePos, int damage, float speed)
+    public override void Fire(Monster target, Vector3 firePos, int damage, float speed, Weapon owner)
     {
         projectileType = ProjectileType.Slash;
-        base.Fire(target, firePos, damage, speed);
+        base.Fire(target, firePos, damage, speed, owner);
     }
 
     protected override IEnumerator MoveProjectile(Monster enemy, GameObject projectile)

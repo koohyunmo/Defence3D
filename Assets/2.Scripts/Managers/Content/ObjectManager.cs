@@ -8,6 +8,7 @@ using static MyEnums;
 public class ObjectManager
 {
     private HashSet<Monster> monsters = new HashSet<Monster>();
+    private static int objId = 1;
 
     public List<Monster> GetMonsters()
     {
@@ -28,8 +29,19 @@ public class ObjectManager
         string prefabName = Managers.Stage.GetStageCount() % 2 == 0 ? "Monster_1" : "Monster_2";
         var go = Managers.Resource.Instantiate(prefabName, pooling:true);
         var monster = go.GetComponent<Monster>();
+        monster.transform.localScale = Vector3.one;
         monsters.Add(monster);
         monster.Spawn(new MonsterData("Slime", Managers.Data.CalculateHP(Managers.Stage.GetStageCount()), 2));
+    }
+
+    public void SpawnBoss()
+    {
+        string prefabName = Managers.Stage.GetStageCount() % 2 == 0 ? "Monster_1" : "Monster_2";
+        var go = Managers.Resource.Instantiate(prefabName, pooling: true);
+        var bossMonster = go.GetComponent<Monster>();
+        bossMonster.transform.localScale = Vector3.one * 2.5f; 
+        monsters.Add(bossMonster);
+        bossMonster.Spawn(new MonsterData("Slime", Managers.Data.CalculateHP(Managers.Stage.GetStageCount() + 5), 2));
     }
 
     public GridObject SpawnWeapon()
@@ -66,13 +78,13 @@ public class ObjectManager
         switch (weaponType)
         {
             case WeaponType.Sword:
-                weaponData = new WeaponData("Sword", GetPowF(rankAndColor.Item1, 1.2f, 2.5f) * 1.5f, Managers.Data.GetSwordDamage(rankAndColor.Item1), rankAndColor.Item1, (UnitGrade)rankAndColor.Item1);
+                weaponData = new WeaponData("Sword", GetPowF(rankAndColor.Item1, 1.2f, 2.5f) * 1.5f, Managers.Data.GetSwordDamage(rankAndColor.Item1), rankAndColor.Item1, (UnitGrade)rankAndColor.Item1,objId++);
                 break;
             case WeaponType.Bow:
-                weaponData = new WeaponData("Bow", GetPowF(rankAndColor.Item1, 1.2f, 2.5f) * 2f, Managers.Data.GetSwordDamage(rankAndColor.Item1) / 2, rankAndColor.Item1 * 5f, (UnitGrade)rankAndColor.Item1);
+                weaponData = new WeaponData("Bow", GetPowF(rankAndColor.Item1, 1.2f, 2.5f) * 2f, Managers.Data.GetSwordDamage(rankAndColor.Item1) / 2, rankAndColor.Item1 * 5f, (UnitGrade)rankAndColor.Item1, objId++);
                 break;
             case WeaponType.Axe:
-                weaponData = new WeaponData("Axe", GetPowF(rankAndColor.Item1, 1.2f, 2.5f), Managers.Data.GetSwordDamage(rankAndColor.Item1) * 2, rankAndColor.Item1 * 0.5f, (UnitGrade)rankAndColor.Item1);
+                weaponData = new WeaponData("Axe", GetPowF(rankAndColor.Item1, 1.2f, 2.5f), Managers.Data.GetSwordDamage(rankAndColor.Item1) * 2, rankAndColor.Item1 * 0.5f, (UnitGrade)rankAndColor.Item1, objId++);
                 break;
         }
 
@@ -103,7 +115,7 @@ public class ObjectManager
         var weapon = go.GetComponent<Weapon>();
 
         //ew WeaponData("Sword1",2.5f,50,0.5f);
-        WeaponData weaponData = new WeaponData("Sword", GetPowF((int)grade, 1.2f, 2.5f), Managers.Data.GetSwordDamage(grade), (int)grade, grade);
+        WeaponData weaponData = new WeaponData("Sword", GetPowF((int)grade, 1.2f, 2.5f), Managers.Data.GetSwordDamage(grade), (int)grade, grade,objId++);
         weapon.Spawn(weaponData);
 
         // 자식 객체에서 Renderer를 찾기

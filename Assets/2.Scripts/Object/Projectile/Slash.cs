@@ -7,10 +7,10 @@ public class Slash : Projectile
 {
     private float maxDistance = 15f; // 발사체가 날아갈 최대 거리
 
-    public override void Fire(Monster target, Vector3 firePos, int damage, float speed)
+    public override void Fire(Monster target, Vector3 firePos, int damage, float speed, Weapon owner)
     {
         projectileType = ProjectileType.Slash;
-        base.Fire(target, firePos, damage, speed);
+        base.Fire(target, firePos, damage, speed, owner);
     }
 
     protected override IEnumerator MoveProjectile(Monster enemy, GameObject projectile)
@@ -19,6 +19,7 @@ public class Slash : Projectile
         Vector3 startPosition = projectile.transform.position; // 발사체의 시작 위치
         Vector3 targetPosition = enemy.transform.position;
         projectile.transform.position = startPosition;
+        LookAtTarget(targetPosition,projectile.transform);
 
         while (distanceCovered < maxDistance)
         {
@@ -48,6 +49,7 @@ public class Slash : Projectile
         if(other.CompareTag(MONSTER_TAG))
         {
             other.GetComponent<Monster>().OnDamage(damage);
+            damage = Mathf.Max((int)(damage * 0.9f), 1);
         }
     }
 

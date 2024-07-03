@@ -16,7 +16,7 @@ public class Axe : Weapon
     protected override void AttackDetail()
     {
         var projectile = Managers.Resource.Instantiate("Smash", pooling: true);
-        projectile.GetComponent<Projectile>().Fire(targetEnemy, transform.position, totalDamage, weaponData.range);
+        projectile.GetComponent<Projectile>().Fire(targetEnemy, transform.position, totalDamage, weaponData.range, this);
     }
 
     protected override void PlayAnim()

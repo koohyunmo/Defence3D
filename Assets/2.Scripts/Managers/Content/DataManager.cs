@@ -34,7 +34,7 @@ public class DataManager
 
         switch (grade)
         {
-            case UnitGrade.Basic: return 16; ;
+            case UnitGrade.Basic: return 16;
             case UnitGrade.Rare: return 20;
             case UnitGrade.Ancient: return 30;
             case UnitGrade.Relic: return 60;
@@ -50,13 +50,11 @@ public class DataManager
 
     public int CalculateHP(float level)
     {
-        // Coefficients of the polynomial
         float a = 0.1151f;
         float b = -5.6385f;
         float c = 105.85f;
         float d = -306.88f;
 
-        // Calculate y using the given polynomial equation
         float y = a * Mathf.Pow(level, 3) + b * Mathf.Pow(level, 2) + c * level + d;
         y = Mathf.Max(10, y);
         return (int)y;
@@ -64,6 +62,6 @@ public class DataManager
 
     public void DisplayHP(int stageCount)
     {
-        Debug.Log(CalculateHP(stageCount));
+        Debug.Log($"{stageCount}_STAGE HP : " + CalculateHP(stageCount));
     }
 }

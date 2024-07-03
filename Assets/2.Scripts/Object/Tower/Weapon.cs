@@ -164,7 +164,7 @@ public class Weapon : GridObject
     ---------------*/
     public WeaponData GetWeaponData()
     {
-        return new WeaponData(weaponData); // 방어적 복사
+        return weaponData;
     }
     protected void LookAtTarget(Transform target, Transform model)
     {
