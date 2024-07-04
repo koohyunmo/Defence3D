@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using static MyEnums;
 public class ObjectManager
 {
     private HashSet<Monster> monsters = new HashSet<Monster>();
+    public Player Player {get; set;}
     private static int objId = 1;
 
     public List<Monster> GetMonsters()
@@ -146,5 +148,10 @@ public class ObjectManager
     private float GetPowF(int rank, float power, float baseValue)
     {
         return baseValue * Mathf.Pow(power, rank);
+    }
+
+    public void SetPlayer(Player player)
+    {
+        Player = player;
     }
 }

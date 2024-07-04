@@ -5,37 +5,54 @@ using static MyEnums;
 
 public class RandomManager
 {
-    short[] probability = new short[10000];
-
-    public void Init()
+    private Dictionary<UnitGrade, float> probabilities = new Dictionary<UnitGrade, float>()
     {
-        // 배열 초기화 (예시)
-        for (int i = 0; i < 5000; i++) probability[i] = 1; // 기본 유닛
-        for (int i = 5000; i < 8310; i++) probability[i] = 2; // 레어
-        for (int i = 8310; i < 9330; i++) probability[i] = 3; // 고대
-        for (int i = 9330; i < 9840; i++) probability[i] = 4; // 유물
-        for (int i = 9840; i < 9920; i++) probability[i] = 5; // 서사
-        for (int i = 9920; i < 9970; i++) probability[i] = 6; // 전설
-        for (int i = 9970; i < 9990; i++) probability[i] = 7; // 에픽
-        for (int i = 9990; i < 9998; i++) probability[i] = 8; // 신화
-        for (int i = 9998; i < 10000; i++) probability[i] = 9; // 태초
+        { UnitGrade.Basic, 50.0f },
+        { UnitGrade.Rare, 33.1f },
+        { UnitGrade.Ancient, 10.2f },
+        { UnitGrade.Relic, 5.1f },
+        { UnitGrade.Epic, 0.8f },
+        { UnitGrade.Legendary, 0.5f },
+        { UnitGrade.Mythic, 0.2f },
+        { UnitGrade.Mythical, 0.08f },
+        { UnitGrade.Primal, 0.019f }
+    };
+
+    public void Init() { }
+
+    public void Upgrade()
+    {
+        float basicDecreaseRate = 0.9f; // Basic 확률 감소율
+        float basicCurrentProbability = probabilities[UnitGrade.Basic];
+        float totalOtherProbability = 100.0f - basicCurrentProbability;
+        float totalCurrentOtherProbability = 100.0f - (basicCurrentProbability * basicDecreaseRate);
+
+        probabilities[UnitGrade.Basic] *= basicDecreaseRate;
+
+        foreach (var grade in probabilities.Keys)
+        {
+            if (grade != UnitGrade.Basic)
+            {
+                probabilities[grade] = probabilities[grade] / totalOtherProbability * totalCurrentOtherProbability;
+            }
+        }
     }
 
-    private float GetProbabilityPercentage(UnitGrade grade)
+    private UnitGrade GetRandomGrade()
     {
-        switch (grade)
+        float randomValue = Random.Range(0f, 100f);
+        float cumulativeProbability = 0f;
+
+        foreach (var grade in probabilities.Keys)
         {
-            case UnitGrade.Basic: return 50.0f;
-            case UnitGrade.Rare: return 33.1f;
-            case UnitGrade.Ancient: return 10.2f;
-            case UnitGrade.Relic: return 5.1f;
-            case UnitGrade.Epic: return 0.8f;
-            case UnitGrade.Legendary: return 0.5f;
-            case UnitGrade.Mythic: return 0.2f;
-            case UnitGrade.Mythical: return 0.08f;
-            case UnitGrade.Primal: return 0.019f;
-            default: return 0.0f;
+            cumulativeProbability += probabilities[grade];
+            if (randomValue <= cumulativeProbability)
+            {
+                return grade;
+            }
         }
+
+        return UnitGrade.Basic; // 기본값
     }
 
     public Color GetColorForGrade(UnitGrade grade)
@@ -57,17 +74,14 @@ public class RandomManager
 
     public (int, Color) GetTestColorAndRank()
     {
-        int rnd = Random.Range(0, probability.Length);
-        UnitGrade selectedGrade = (UnitGrade)probability[rnd];
-
+        UnitGrade selectedGrade = GetRandomGrade();
         return ((int)selectedGrade, GetColorForGrade(selectedGrade));
     }
 
     public int TestRandom()
     {
-        int rnd = Random.Range(0, probability.Length);
-        UnitGrade selectedGrade = (UnitGrade)probability[rnd];
-        float probabilityPercentage = GetProbabilityPercentage(selectedGrade);
+        UnitGrade selectedGrade = GetRandomGrade();
+        float probabilityPercentage = probabilities[selectedGrade];
         Debug.Log("Selected Unit Grade: " + selectedGrade + ", Probability: " + probabilityPercentage + "%");
         return (int)selectedGrade;
     }
@@ -76,9 +90,8 @@ public class RandomManager
     {
         for (int i = 0; i < 100000; i++)
         {
-            int rnd = Random.Range(0, probability.Length);
-            UnitGrade selectedGrade = (UnitGrade)probability[rnd];
-            float probabilityPercentage = GetProbabilityPercentage(selectedGrade);
+            UnitGrade selectedGrade = GetRandomGrade();
+            float probabilityPercentage = probabilities[selectedGrade];
             Debug.Log("Selected Unit Grade: " + selectedGrade + ", Probability: " + probabilityPercentage + "%");
         }
     }

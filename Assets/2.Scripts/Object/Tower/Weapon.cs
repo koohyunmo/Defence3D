@@ -19,7 +19,7 @@ public class Weapon : GridObject
     protected bool isAttacking = false;
     protected WeaponData weaponData = null;
     protected Animator anim;
-    protected int totalDamage => weaponData.damage * Managers.Upgrade.GetLevel(MyEnums.WeaponType.Sword);
+    protected int totalDamage => weaponData.damage * Managers.Upgrade.GetLevel(grade, Managers.Object.Player);
     [SerializeField] private int currentDamage;
 
     [SerializeField] protected WeaponType weaponType = WeaponType.None;
@@ -33,6 +33,7 @@ public class Weapon : GridObject
         // Data Init
         weaponData = data;
         anim = GetComponent<Animator>();
+        grade = weaponData.grade;
 
         // 초기화
         attackCounter = 0f;

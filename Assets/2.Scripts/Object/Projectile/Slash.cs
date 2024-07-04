@@ -49,7 +49,7 @@ public class Slash : Projectile
         if(other.CompareTag(MONSTER_TAG))
         {
             other.GetComponent<Monster>().OnDamage(damage);
-            damage = Mathf.Max((int)(damage * 0.9f), 1);
+            damage = Mathf.Max((int)(damage * 0.7f), 1);
         }
     }
 

@@ -5,7 +5,12 @@ using static MyEnums;
 
 public class DataManager
 {
-
+    public void Init()
+    {
+        CSVParser parser = new CSVParser();
+        parser.ParseData();
+        parser = null;
+    }
     public int GetSwordDamage(int grade)
     {
         Debug.Assert((int)grade >= 1);

@@ -5,6 +5,32 @@ using UnityEngine;
 public class MyEnums
 {
 
+    /*----------------
+            MyEnums
+    ------------------*/
+    public enum Scene
+    {
+        Unknown,
+        Login,
+        Lobby,
+        Game,
+    }
+
+    public enum Sound
+    {
+        Bgm,
+        Effect,
+        MaxCount,
+    }
+
+    public enum UIEvent
+    {
+        Click,
+        Drag,
+        DoubleClick,
+        PointUp,
+    }
+
     public enum UnitGrade
     {
         None = 0,

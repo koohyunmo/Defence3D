@@ -16,9 +16,16 @@ public class GameScene : MonoBehaviour
              {
                 Debug.Log("Load All");
                 Managers.Effect.Init();
-                CSVParser parser = new CSVParser();
-                parser.ParseData();
-                parser = null;
+
+                Managers.Data.Init();
+
+                Player player = new Player();
+                Managers.Object.SetPlayer(player);
+
+                 Managers.UI.ShowSceneUI<UI_StageTimerAndStageCount>();
+                 Managers.UI.ShowSceneUI<UI_MonsterCount>();
+                 Managers.UI.ShowSceneUI<UI_HorizontalButtons>();
+                 Managers.UI.ShowSceneUI<UI_StatusBar>();
              }
          });
 

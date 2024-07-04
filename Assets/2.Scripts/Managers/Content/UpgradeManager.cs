@@ -5,29 +5,65 @@ using static MyEnums;
 
 public class UpgradeManager
 {
-    private int _swordUpgradeLevel = 1;
+    private int _upgrade1Price = 20;
+    private int _upgrade2Price = 40;
+    private int _upgrade3Price = 80;
+    private int _spawnUpgradePrice = 20;
 
-    public void SwordUpgrade()
+    public bool Upgrade1(Player player)
     {
-        _swordUpgradeLevel++;
+        if(player.gold < _upgrade1Price) return false;
+        
+        player.Upgrade1Weapon();
+        player.UseGold(_upgrade1Price);
+        return true;
     }
-    public int GetSwordUpgradeLevel()
+    public bool Upgrade2(Player player)
     {
-        return _swordUpgradeLevel;
+        if (player.gold < _upgrade2Price) return false;
+
+        player.Upgrade1Weapon();
+        player.UseGold(_upgrade2Price);
+        return true;
     }
-
-    public int GetLevel(WeaponType weaponType)
+    public bool Upgrade3(Player player)
     {
-        Debug.Assert((int)weaponType >= 1);
+        if (player.gold < _upgrade3Price) return false;
 
-        switch (weaponType)
+        player.Upgrade2Weapon();
+        player.UseGold(_upgrade2Price);
+        return true;
+    }
+    public bool UpgradeSpawn(Player player)
+    {
+        if (player.gold < _spawnUpgradePrice) return false;
+
+        player.UpgradeSpawn();
+        player.UseGold(_spawnUpgradePrice);
+        return true;
+    }
+    public int GetLevel(UnitGrade grade, Player player)
+    {
+        Debug.Assert(grade != UnitGrade.None && player != null);
+
+        switch (grade)
         {
-            case WeaponType.Sword : return _swordUpgradeLevel;
-        }
+            case UnitGrade.Basic:
+            case UnitGrade.Rare:
+            case UnitGrade.Ancient:
+                return player.upgrade1Level;
+            case UnitGrade.Relic:
+            case UnitGrade.Epic:
+            case UnitGrade.Legendary:
+                return player.upgrade2Level;
+            case UnitGrade.Mythic:
+            case UnitGrade.Mythical:
+            case UnitGrade.Primal:
+                return player.upgrade3Level;
 
-        return 1;
+        }
+        return -1;
         
     }
-
 
 }

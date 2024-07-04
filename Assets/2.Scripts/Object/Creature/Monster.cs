@@ -64,6 +64,7 @@ public class Monster : MonoBehaviour
 
     public void OnDead()
     {
+        Managers.Object.Player.GoldReward();
         Managers.Resource.Destroy(gameObject);
         Managers.Object.DespawnMonster(this);
     }

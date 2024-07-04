@@ -14,12 +14,12 @@ public class TestUpgrade : MonoBehaviour
     }
     public void Upgrade()
     {
-        Managers.Upgrade.SwordUpgrade();
+        //Managers.Upgrade.SwordUpgrade();
         UpdateUI();
     }
 
     private void UpdateUI()
     {
-        upgradeText.text = "+" + Managers.Upgrade.GetSwordUpgradeLevel().ToString();
+        //upgradeText.text = "+" + Managers.Upgrade.GetSwordUpgradeLevel().ToString();
     }
 }

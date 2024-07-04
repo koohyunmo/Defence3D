@@ -18,6 +18,9 @@ public class Managers : MonoBehaviour
     private UpgradeManager _upgrade = new UpgradeManager();
     private EffectManager _effect = new EffectManager();
     private ReinforceManager _reinforce = new ReinforceManager();
+    private UIManager _ui = new UIManager();
+    private NotiManager _noti = new NotiManager();
+    private SpawnManager _spawn = new SpawnManager();
 
     //------------------------//
     //          Core          //
@@ -35,7 +38,9 @@ public class Managers : MonoBehaviour
     public static UpgradeManager Upgrade { get { return Instance?._upgrade; } }
     public static EffectManager Effect { get { return Instance?._effect; } }
     public static ReinforceManager Reinforce {get {return Instance?._reinforce;}}
-
+    public static UIManager UI { get { return Instance?._ui;}}
+    public static NotiManager Notify {get {return Instance?._noti;}}
+    public static SpawnManager Spawn {get {return Instance?._spawn;}}
     public static Managers Instance
     {
         get

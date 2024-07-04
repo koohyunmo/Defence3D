@@ -131,7 +131,7 @@ public class GridSystem
             selectedWeapon = selectedObj.GetComponent<Weapon>();
         }
 
-        // 강화 시도
+        // 강화
         if (targetWeapon && selectedWeapon &&
             targetWeapon.GetWeaponData().Equals(selectedWeapon.GetWeaponData()))
         {
