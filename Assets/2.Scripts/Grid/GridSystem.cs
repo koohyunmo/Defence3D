@@ -135,16 +135,16 @@ public class GridSystem
         if (targetWeapon && selectedWeapon &&
             targetWeapon.GetWeaponData().Equals(selectedWeapon.GetWeaponData()))
         {
+            Managers.Reinforce.Reinforce(selectedWeapon, targetWeapon);
             Remove(originalPos);
-            Managers.Reinforce.Reinforce(selectedWeapon,targetWeapon);
             return false;
         }
 
         // 스왑
         if (targetObj)
         {
-            gridObj[sX, sZ].transform.position = GetGridCellPosition(tX, tZ);
-            gridObj[tX, tZ].transform.position = GetGridCellPosition(sX, sZ);
+            gridObj[sX, sZ].transform.position = GetGridCellPosition(tX, tZ,2);
+            gridObj[tX, tZ].transform.position = GetGridCellPosition(sX, sZ,2);
 
             gridObj[sX, sZ] = targetObj;
             gridObj[tX, tZ] = selectedObj;
@@ -152,7 +152,7 @@ public class GridSystem
         // Move
         else
         {
-            selectedObj.transform.position = GetGridCellPosition(tX, tZ);
+            selectedObj.transform.position = GetGridCellPosition(tX, tZ,2);
             gridObj[tX, tZ] = selectedObj;
             gridObj[sX, sZ] = null;
             indexStack.Enqueue(GetIndex(sX, sZ));
@@ -211,7 +211,7 @@ public class GridSystem
     {
         var weapon = Managers.Object.SpawnWeapon();
         weapon.transform.SetParent(root.transform);
-        Vector3 newPos = GetGridCellPosition(x, z);
+        Vector3 newPos = GetGridCellPosition(x, z, 2);
         weapon.transform.position = newPos;
 
         gridObj[x, z] = weapon;
@@ -222,7 +222,7 @@ public class GridSystem
     {
         var weapon = Managers.Object.SpawnWeapon(grade);
         weapon.transform.SetParent(root.transform);
-        Vector3 newPos = GetGridCellPosition(x, z);
+        Vector3 newPos = GetGridCellPosition(x, z, 2);
         weapon.transform.position = newPos;
 
         gridObj[x, z] = weapon;
@@ -238,11 +238,16 @@ public class GridSystem
         if (OutOfBounds(x, z)) return false;
         if (gridObj[x, z] == null) return false;
 
-        GameObject.Destroy(gridObj[x, z].gameObject);
-        gridObj[x, z] = null;
         indexStack.Enqueue(GetIndex(x, z));
         SetValue(x, z, 0);
         gridCell[x, z].ResetCell();
+
+        var weapon = gridObj[x, z] as Weapon;
+        Managers.Object.Player.SetGold(Managers.Data.GetSellGold(weapon.GetWeaponData().grade));
+
+        Managers.Object.DespawnSweapon(gridObj[x, z]);
+        Managers.Resource.Destroy(gridObj[x, z].gameObject);
+        gridObj[x, z] = null;
         return true;
     }
 
@@ -289,7 +294,7 @@ public class GridSystem
         {
             int sX = -1, sZ = -1;
             GetXZ(selectedCell.transform.position, out sX, out sZ);
-            if(gridObj[sX,sZ] != null)
+            if (gridObj[sX, sZ] != null)
             {
                 selectedCell.TakeUpCell();
             }
@@ -309,8 +314,20 @@ public class GridSystem
         // 선택된 셀에 이미 타워가 있는 경우 병합 색상을 표시
         else
         {
-            selectedCell = gridCell[pX, pZ];
-            gridCell[pX, pZ].MergeCell();
+            var selectedweapon = gridObj[oX, oZ] as Weapon;
+            var pointedWeapon = gridObj[pX, pZ] as Weapon;
+            // 같은 경우 TODO 강화 가능 UI
+            if (selectedweapon.GetWeaponData().Equals(pointedWeapon.GetWeaponData()))
+            {
+                selectedCell = gridCell[pX, pZ];
+                gridCell[pX, pZ].MergeCell();
+            }
+            else
+            {
+                selectedCell = gridCell[pX, pZ];
+                gridCell[pX, pZ].ConflictCell();
+            }
+
         }
     }
 

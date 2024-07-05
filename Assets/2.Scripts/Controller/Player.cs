@@ -11,6 +11,15 @@ public class Player
     public int upgrade2Level = 1;
     public int upgrade3Level = 1;
 
+    public Player()
+    {
+        gold = 100;
+        spawnLevel = 1;
+        upgrade1Level = 1;
+        upgrade2Level = 1;
+        upgrade3Level = 1;
+    }
+
     public void UpgradeSpawn()
     {
         spawnLevel++;
@@ -36,6 +45,12 @@ public class Player
     public void GoldReward()
     {
         gold++;
+        Managers.Notify.NotifyChangedGold();
+    }
+
+    public void SetGold(int v)
+    {
+        gold += v;
         Managers.Notify.NotifyChangedGold();
     }
 }

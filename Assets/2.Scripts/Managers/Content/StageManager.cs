@@ -7,7 +7,7 @@ public class StageManager
 {
     private float stagetTimer = STAGE_DELAY;
     private int stageCount = 1;
-    private float spawnDelay = 1f / 2;
+    private float spawnDelay = 0.5f;
     private float spawnCoolTime = 0;
     private bool bossSpawn = false;
     public void StagetStart()
@@ -67,7 +67,7 @@ public class StageManager
             {
                 stagetTimer = STAGE_DELAY;
                 stageCount++;
-                Managers.Data.DisplayHP(stageCount);
+                Managers.Data.DisplayStageHPAndDPS(stageCount);
             }
 
             yield return null;

@@ -5,8 +5,11 @@ using static MyDefine;
 using static MyEnums;
 public class Weapon : GridObject
 {
+    /*------------
+        맴버변수
+    --------------*/
     [SerializeField]
-    protected float timeBetweenAttacks => weaponData.fireRate; // Attack Speed
+    protected float timeBetweenAttacks => weaponData.GetFireRate(); // Attack Speed
     [SerializeField]
     protected float attackRange => weaponData.range;        // Attack Radius
     [SerializeField]
@@ -19,11 +22,15 @@ public class Weapon : GridObject
     protected bool isAttacking = false;
     protected WeaponData weaponData = null;
     protected Animator anim;
-    protected int totalDamage => weaponData.damage * Managers.Upgrade.GetLevel(grade, Managers.Object.Player);
+    protected int totalDamage => weaponData.damage * Managers.Upgrade.GetLevel(Grade, Managers.Object.Player);
     [SerializeField] private int currentDamage;
 
-    [SerializeField] protected WeaponType weaponType = WeaponType.None;
-    [SerializeField] protected UnitGrade grade = UnitGrade.None;
+    /*------------
+        프로퍼티
+    --------------*/
+
+    public WeaponType WeaponType {get; protected set;} = WeaponType.None;
+    public UnitGrade Grade  {get; protected set;} = UnitGrade.None;
 
     /*------------
         초기 설정
@@ -33,7 +40,7 @@ public class Weapon : GridObject
         // Data Init
         weaponData = data;
         anim = GetComponent<Animator>();
-        grade = weaponData.grade;
+        Grade = weaponData.grade;
 
         // 초기화
         attackCounter = 0f;

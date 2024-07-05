@@ -9,8 +9,8 @@ public class Sword : Weapon
     public override void Spawn(WeaponData data)
     {
         base.Spawn(data);
-        weaponType = WeaponType.Sword;
-        grade = data.grade;
+        WeaponType = WeaponType.Sword;
+        Grade = data.grade;
 
     }
     protected override void PlayAnim()

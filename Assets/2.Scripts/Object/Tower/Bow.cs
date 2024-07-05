@@ -10,8 +10,8 @@ public class Bow : Weapon
     public override void Spawn(WeaponData data)
     {
         base.Spawn(data);
-        weaponType = WeaponType.Bow;
-        grade = data.grade;
+        WeaponType = WeaponType.Bow;
+        Grade = data.grade;
 
         LookAtPosition(Managers.Grid.GetPath(0), transform.GetChild(0));
     }
@@ -24,7 +24,11 @@ public class Bow : Weapon
             Debug.LogWarning("TargetEnemy is null");
             return;
         }
-
+        if(anim == null)
+        {
+            anim = gameObject.GetComponentInChildren<Animator>();
+        }
+        anim.speed = weaponData.fireRate;
         // 활의 매쉬 모델을 가져옴
         Transform bowMesh = transform.GetChild(0);
         LookAtTarget(targetEnemy.transform, bowMesh);

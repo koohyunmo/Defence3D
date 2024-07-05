@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,7 +22,7 @@ public class WeaponData
         this.weaponName = name;
         this.range = range;
         this.damage = damage;
-        this.fireRate = 1/fireRate;
+        this.fireRate = fireRate;
         this.level = 1;  // 초기 레벨은 1로 설정
         this.grade = grade;
         this.id = id;
@@ -32,10 +33,15 @@ public class WeaponData
         this.weaponName = data.weaponName;
         this.range = data.range;
         this.damage = data.damage;
-        this.fireRate = 1/data.fireRate;
+        this.fireRate = data.fireRate;
         this.level = data.level;  // 초기 레벨은 1로 설정
         this.grade = data.grade;
         this.id = data.id;
+    }
+
+    public float GetFireRate()
+    {
+        return 1/ fireRate;
     }
 
     // override object.Equals
@@ -76,5 +82,16 @@ public class WeaponData
         damage = (int)(damage *2f);  // 공격력 200% 증가
         range *= 1.2f;  // 사거리 20% 증가
         fireRate *= 1.2f;  // 공격 속도 20% 증가
+    }
+
+    public void SetWeaponData(WeaponData newWeaponData)
+    {
+        this.weaponName = newWeaponData.weaponName;
+        this.range = newWeaponData.range;
+        this.damage = newWeaponData.damage;
+        this.fireRate = newWeaponData.fireRate;
+        this.level = newWeaponData.level;
+        this.grade = newWeaponData.grade;
+        this.id = newWeaponData.id;
     }
 }

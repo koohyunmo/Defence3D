@@ -40,7 +40,23 @@ public class ResourceManager
 		go.name = prefab.name;
 		return go;
 	}
+	public GameObject Instantiate(GameObject pb, Transform parent = null, bool pooling = false)
+	{
+		GameObject prefab = pb;
+		if (prefab == null)
+		{
+			Debug.Log($"prefab is Null");
+			return null;
+		}
 
+		// Pooling
+		if (pooling)
+			return Managers.Pool.Pop(prefab);
+
+		GameObject go = Object.Instantiate(prefab, parent);
+		go.name = prefab.name;
+		return go;
+	}
 	public void Destroy(GameObject go)
 	{
 		if (go == null)

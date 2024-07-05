@@ -4,8 +4,24 @@ using UnityEngine;
 
 public class ReinforceManager
 {
-    public void Reinforce(Weapon selectedWeapon, Weapon target)
+    public bool Reinforce(Weapon selectedWeapon, Weapon target)
     {
-        target.GetWeaponData().Upgrade();
+
+        // 강화 여부 로직
+
+
+        if(target.GetWeaponData().level >= selectedWeapon.GetWeaponData().level)
+        {
+            target.GetWeaponData().Upgrade();
+        }
+        else
+        {
+            selectedWeapon.GetWeaponData().Upgrade();
+            target.GetWeaponData().SetWeaponData(selectedWeapon.GetWeaponData());
+        }
+        target.gameObject.transform.localScale *= 1.2f;
+        Debug.Log("강화 성공 : " + target.GetWeaponData().level);
+        return true;
+
     }
 }

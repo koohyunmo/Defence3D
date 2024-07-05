@@ -1,45 +1,57 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using static MyEnums;
 
 
+[System.Serializable]
+public class CSVData
+{
+    public CSVData(params string[] values)
+    {
+        key = values[1];
+        nameKey = values[2];
+        modelKey = values[3];
+        effectKey = values[4];
+        itemType = int.Parse(values[5]);
+        itemGrade = int.Parse(values[6]);
+    }
 
+    public bool DataOk()
+    {
+        if (string.IsNullOrEmpty(key)) return false;
+        if (string.IsNullOrEmpty(nameKey)) return false;
+        if (string.IsNullOrEmpty(modelKey)) return false;
+        if (string.IsNullOrEmpty(effectKey)) return false;
+
+        return true;
+    }
+
+    public void PrintData()
+    {
+        Debug.Log($"{key} {nameKey} {modelKey} {effectKey} {itemType} {itemGrade}");
+    }
+
+    public string key;
+    public string nameKey;
+    public string modelKey;
+    public string effectKey;
+    public int itemType;
+    public int itemGrade;
+}
 
 public class CSVParser
 {
-
-    [System.Serializable]
-    public class CSVData
-    {
-        public CSVData(params string[] values)
-        {
-            if (values.Length >= 3)
-            {
-                key = values[0];
-                nameKey = values[1];
-                modelKey = values[2];
-            }
-            else
-            {
-                Debug.LogError("Insufficient data to create CSVData.");
-            }
-        }
-
-        public void PrintData()
-        {
-            Debug.Log($"{key} {nameKey} {modelKey}");
-        }
-
-        string key;
-        string nameKey;
-        string modelKey;
-    }
-
     public List<CSVData> items = new List<CSVData>();
 
     public void ParseData()
     {
         LoadCSV();
+    }
+    public List<CSVData> GetParseData()
+    {
+        return items;
     }
 
     void LoadCSV()
@@ -57,7 +69,9 @@ public class CSVParser
                 string[] values = csvLines[i].Split(',');
 
                 CSVData readData = new CSVData(values);
-                readData.PrintData();
+                
+                if(readData.DataOk())
+                    items.Add(readData);
             }
             Debug.Log("CSV Loaded Successfully");
         }

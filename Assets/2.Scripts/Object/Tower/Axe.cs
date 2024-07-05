@@ -8,8 +8,8 @@ public class Axe : Weapon
     public override void Spawn(WeaponData data)
     {
         base.Spawn(data);
-        weaponType = WeaponType.Axe;
-        grade = data.grade;
+        WeaponType = WeaponType.Axe;
+        Grade = data.grade;
 
     }
 

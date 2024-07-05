@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,41 +6,51 @@ using static MyEnums;
 
 public class UpgradeManager
 {
-    private int _upgrade1Price = 20;
-    private int _upgrade2Price = 40;
-    private int _upgrade3Price = 80;
-    private int _spawnUpgradePrice = 20;
+    public int Upgrade1Price {get; private set;}= 20;
+    public int Upgrade2Price { get; private set; }= 40;
+    public int Upgrade3Price { get; private set; }= 80;
+    public int SpawnUpgradePrice { get; private set; }= 20;
+
+    List<Action> updateUI = new List<Action>();
 
     public bool Upgrade1(Player player)
     {
-        if(player.gold < _upgrade1Price) return false;
+        if(player.gold < Upgrade1Price) return false;
         
         player.Upgrade1Weapon();
-        player.UseGold(_upgrade1Price);
+        player.UseGold(Upgrade1Price);
+        Upgrade1Price  += 2;
+        InvokeUpdateUI();
         return true;
     }
     public bool Upgrade2(Player player)
     {
-        if (player.gold < _upgrade2Price) return false;
+        if (player.gold < Upgrade2Price) return false;
 
         player.Upgrade1Weapon();
-        player.UseGold(_upgrade2Price);
+        player.UseGold(Upgrade2Price);
+        Upgrade2Price += 4;
+        InvokeUpdateUI();
         return true;
     }
     public bool Upgrade3(Player player)
     {
-        if (player.gold < _upgrade3Price) return false;
+        if (player.gold < Upgrade3Price) return false;
 
-        player.Upgrade2Weapon();
-        player.UseGold(_upgrade2Price);
+        player.Upgrade3Weapon();
+        player.UseGold(Upgrade3Price);
+        Upgrade3Price += 8;
+        InvokeUpdateUI();
         return true;
     }
     public bool UpgradeSpawn(Player player)
     {
-        if (player.gold < _spawnUpgradePrice) return false;
+        if (player.gold < SpawnUpgradePrice) return false;
 
         player.UpgradeSpawn();
-        player.UseGold(_spawnUpgradePrice);
+        player.UseGold(SpawnUpgradePrice);
+        SpawnUpgradePrice += 4;
+        InvokeUpdateUI();
         return true;
     }
     public int GetLevel(UnitGrade grade, Player player)
@@ -63,7 +74,23 @@ public class UpgradeManager
 
         }
         return -1;
-        
+    }
+
+    public void RegisterUpdateUI(Action evt)
+    {
+        updateUI.Add(evt);
+    }
+    public void RemoveUpdateUI(Action evt)
+    {
+        updateUI.Remove(evt);
+    }
+
+    private void InvokeUpdateUI()
+    {
+        foreach(var evt in updateUI)
+        {
+            evt?.Invoke();
+        }
     }
 
 }

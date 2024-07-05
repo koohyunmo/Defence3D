@@ -2,14 +2,83 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
+using Unity.Properties;
 using UnityEngine;
 using static MyEnums;
 
 public class ObjectManager
 {
     private HashSet<Monster> monsters = new HashSet<Monster>();
-    public Player Player {get; set;}
+    public Dictionary<WeaponType, List<Weapon>> WeaponDict { get; private set; } = new Dictionary<WeaponType, List<Weapon>>()
+    {
+        { WeaponType.Sword, new List<Weapon>() },
+        { WeaponType.Bow, new List<Weapon>() },
+        { WeaponType.Axe, new List<Weapon>() }
+    };
+
+    private GameObject[,] weaponObjectDict;
+    public void Init()
+    {
+        weaponObjectDict = new GameObject[(int)WeaponType.MAX_COUNT, (int)UnitGrade.MAX_COUNT];
+
+        CSVParser parser = new CSVParser();
+        parser.ParseData();
+        WeaponCaching(parser.GetParseData());
+    }
+
+    private void WeaponCaching(List<CSVData> dataList)
+    {
+        if(dataList == null)
+        {
+            Debug.LogError("Data is Null");
+        }
+        foreach (var data in dataList)
+        {
+            if (data.DataOk() == false) continue;
+
+            var itemPrefab = Managers.Resource.Instantiate(data.key);
+            var modelPrefab = Managers.Resource.Instantiate(data.modelKey);
+
+            // weaponPrefab 의 Mesh와 Material을 수정합니다.
+            if (itemPrefab && modelPrefab)
+            {
+                // Material 변경
+                MeshRenderer itemMeshRenderer = itemPrefab.GetComponentInChildren<MeshRenderer>();
+                MeshRenderer modelMeshRenderer = modelPrefab.GetComponentInChildren<MeshRenderer>();
+                if (itemMeshRenderer && modelMeshRenderer)
+                {
+                    itemMeshRenderer.material = modelMeshRenderer.sharedMaterial;
+                }
+                else
+                {
+                    Debug.LogError("MeshRenderer weaponPrefab is Null");
+                }
+
+                // Mesh 변경
+                MeshFilter itemMeshFilter = itemPrefab.GetComponentInChildren<MeshFilter>();
+                MeshFilter modelMeshFilter = modelPrefab.GetComponentInChildren<MeshFilter>();
+                if (itemMeshFilter && modelMeshFilter)
+                {
+                    itemMeshFilter.mesh = modelMeshFilter.mesh;
+                }
+                else
+                {
+                    Debug.LogError("MeshFilter weaponPrefab is Null");
+                }
+            }
+            else
+            {
+                Debug.LogError("weaponPrefab is Null");
+            }
+            GameObject.Destroy(modelPrefab);
+            Debug.Log($"{data.nameKey} Created");
+            itemPrefab.SetActive(false);
+            itemPrefab.name = data.nameKey;
+            weaponObjectDict[(int)data.itemType, (int)data.itemGrade] = itemPrefab;
+        }
+    }
+
+    public Player Player {get; private set;}
     private static int objId = 1;
 
     public List<Monster> GetMonsters()
@@ -49,22 +118,22 @@ public class ObjectManager
     public GridObject SpawnWeapon()
     {
         var rankAndColor = Managers.Random.GetTestColorAndRank();
-        int type = UnityEngine.Random.Range(0,9) % 3;
+        int type = UnityEngine.Random.Range(1,4);
 
         WeaponType weaponType = WeaponType.None;
         GameObject prefab = null;
 
-        if (type == 0)
+        if (type == (int)WeaponType.Sword)
         {
-            prefab = Managers.Resource.Load<GameObject>("Sword1");
+            prefab = Managers.Resource.Instantiate(weaponObjectDict[type,rankAndColor.Item1]);
             weaponType = WeaponType.Sword;
         }
-        else if(type == 1)
+        else if(type == (int)WeaponType.Bow)
         {
-            prefab = Managers.Resource.Load<GameObject>("Bow1");
+           prefab = Managers.Resource.Load<GameObject>("Bow1");
             weaponType = WeaponType.Bow;
         }
-        else if(type == 2)
+        else if(type == (int)WeaponType.Axe)
         {
             prefab = Managers.Resource.Load<GameObject>("Axe1");
             weaponType = WeaponType.Axe;
@@ -72,7 +141,9 @@ public class ObjectManager
 
         Debug.Assert(weaponType != WeaponType.None);
 
-        var go = GameObject.Instantiate(prefab);
+        var go = Managers.Resource.Instantiate(prefab);
+        go.SetActive(true);
+
         var weapon = go.GetComponent<Weapon>();
 
         WeaponData weaponData = null;
@@ -93,8 +164,10 @@ public class ObjectManager
         Debug.Assert(weaponData != null);
 
         weapon.Spawn(weaponData);
+        WeaponDict[weaponType].Add(weapon);
 
         // 자식 객체에서 Renderer를 찾기
+        // TODO 모델과 이펙트 교체
         Renderer renderer = go.GetComponentInChildren<Renderer>();
         if (renderer != null)
         {
@@ -133,6 +206,21 @@ public class ObjectManager
         }
 
         return weapon;
+    }
+
+    public bool DespawnSweapon(GridObject gridObj)
+    {
+        Weapon weapon = gridObj as Weapon;
+        Debug.Assert(weapon);
+
+        if(WeaponDict[weapon.WeaponType].Remove(weapon))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 

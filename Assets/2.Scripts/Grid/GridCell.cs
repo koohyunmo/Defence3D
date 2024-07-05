@@ -29,6 +29,10 @@ public class GridCell : MonoBehaviour
     }
     public void MergeCell()
     {
+        mat.color = Color.cyan;
+    }
+    public void ConflictCell()
+    {
         mat.color = Color.magenta;
     }
 }

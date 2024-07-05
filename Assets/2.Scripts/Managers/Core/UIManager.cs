@@ -88,6 +88,8 @@ public class UIManager
         
         if(_popupDictionary.ContainsKey(key))
         {
+            _popupDictionary[key].gameObject.SetActive(true);
+            _popupStack.Push(_popupDictionary[key]);
             return _popupDictionary[key] as T;
         }
 
@@ -122,8 +124,9 @@ public class UIManager
 
         
         UI_Popup popup = _popupStack.Pop();
-        Managers.Resource.Destroy(popup.gameObject);
-        _popupDictionary.Remove(popup.name);
+        //Managers.Resource.Destroy(popup.gameObject);
+        popup.gameObject.SetActive(false);
+        //_popupDictionary.Remove(popup.name);
         popup = null;
         _order--;
     }

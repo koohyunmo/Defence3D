@@ -32,7 +32,7 @@ public class Smash : Projectile
 
             // 발사체와 몬스터 간의 거리 계산
             float distanceToTarget = Vector3.Distance(projectile.transform.position, targetPosition);
-            float radiusSum = 1f; // 발사체와 몬스터의 충돌 반경 합
+            float radiusSum = 1.5f; // 발사체와 몬스터의 충돌 반경 합
 
             // 발사체가 몬스터에 닿으면 처리
             if (distanceToTarget <= radiusSum)

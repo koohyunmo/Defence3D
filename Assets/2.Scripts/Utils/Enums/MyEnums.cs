@@ -42,7 +42,8 @@ public class MyEnums
         Legendary = 6, // 전설
         Mythic = 7,    // 에픽
         Mythical = 8,  // 신화
-        Primal = 9     // 태초
+        Primal = 9,    // 태초
+        MAX_COUNT
     }
 
     public enum WeaponType
@@ -50,7 +51,8 @@ public class MyEnums
         None = 0,
         Sword = 1,
         Bow = 2,
-        Axe = 3
+        Axe = 3,
+        MAX_COUNT
     }
 
     public enum ProjectileType

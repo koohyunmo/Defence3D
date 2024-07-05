@@ -17,7 +17,7 @@ public class GameScene : MonoBehaviour
                 Debug.Log("Load All");
                 Managers.Effect.Init();
 
-                Managers.Data.Init();
+                Managers.Object.Init();
 
                 Player player = new Player();
                 Managers.Object.SetPlayer(player);
