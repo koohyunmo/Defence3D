@@ -7,28 +7,37 @@ public class UI_StatusBar : UI_Scene
 {
     enum TMPs
     {
-        GemTMP,
-        GoldTMP,
+        Gem_TMP,
+        Gold_TMP,
+        UnitCount_TMP
     }
 
     TextMeshProUGUI goldTMP;
     TextMeshProUGUI gemTMP;
+    TextMeshProUGUI unitCountTMP;
     private void Start()
     {
         Bind<TextMeshProUGUI>(typeof(TMPs));
 
-        gemTMP = Get<TextMeshProUGUI>((int)TMPs.GemTMP);
-        goldTMP = Get<TextMeshProUGUI>((int)TMPs.GoldTMP);
+        gemTMP = Get<TextMeshProUGUI>((int)TMPs.Gem_TMP);
+        goldTMP = Get<TextMeshProUGUI>((int)TMPs.Gold_TMP);
+        unitCountTMP = Get<TextMeshProUGUI>((int)TMPs.UnitCount_TMP);
 
-        goldTMP.text = Managers.Object.Player.gold.ToString();
-        gemTMP.text = Managers.Object.Player.gold.ToString();
+        Managers.Notify.RegisterGoldUIEvent(UpdateGoldGemUI);
+        Managers.Object.RegisterUpdateUI(UpdateUnitCountUI);
 
-        Managers.Notify.RegisterGoldEvent(UpdateUI);
+        UpdateGoldGemUI();
+        UpdateUnitCountUI();
     }
 
-    private void UpdateUI()
+    private void UpdateGoldGemUI()
     {
         goldTMP.text = Managers.Object.Player.gold.ToString();
         gemTMP.text = Managers.Object.Player.gold.ToString();
+    }
+    private void UpdateUnitCountUI()
+    {
+        if(Managers.Grid.GetGrid() != null)
+            unitCountTMP.text = $"{Managers.Object.GetWeaponTotalCount()} / {Managers.Grid.GetGridSize()}";
     }
 }

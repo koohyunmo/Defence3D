@@ -16,7 +16,7 @@ public class Monster : MonoBehaviour
 
     HpBar hpBar = null;
 
-    public void Spawn(MonsterData data) 
+    public virtual void Spawn(MonsterData data) 
     {
         this.data = data;
 
@@ -62,10 +62,15 @@ public class Monster : MonoBehaviour
         }
     }
 
-    public void OnDead()
+    public virtual void OnDead()
+    {
+        Reward();
+        Managers.Object.DespawnMonster(this);
+        Debug.Log("TODO : 몬스터 죽는 사운드");
+    }
+
+    protected virtual void Reward()
     {
         Managers.Object.Player.GoldReward();
-        Managers.Resource.Destroy(gameObject);
-        Managers.Object.DespawnMonster(this);
     }
 }

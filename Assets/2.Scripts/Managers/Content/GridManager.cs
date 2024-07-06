@@ -17,6 +17,11 @@ public class GridManager
         grid = new GridSystem(width, height, cellSizeX, cellSizeZ, planePosition);
     }
 
+    public int GetGridSize()
+    {
+        return grid.GetGridSize();
+    }
+
     public void RemoveGridObject(Vector3 worldPosition)
     {
         grid.Remove(worldPosition);

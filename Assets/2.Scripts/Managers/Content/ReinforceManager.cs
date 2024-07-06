@@ -19,7 +19,7 @@ public class ReinforceManager
             selectedWeapon.GetWeaponData().Upgrade();
             target.GetWeaponData().SetWeaponData(selectedWeapon.GetWeaponData());
         }
-        target.gameObject.transform.localScale *= 1.2f;
+        target.gameObject.transform.localScale *= 1.1f;
         Debug.Log("강화 성공 : " + target.GetWeaponData().level);
         return true;
 

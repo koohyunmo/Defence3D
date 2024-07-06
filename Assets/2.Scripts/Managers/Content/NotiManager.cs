@@ -14,11 +14,11 @@ public class NotiManager
             evt?.Invoke();
         }
     }
-    public void RegisterGoldEvent(Action evt)
+    public void RegisterGoldUIEvent(Action evt)
     {
         useGoldUIUpdate.Add(evt);
     }
-    public void RemoveGoldEvent(Action evt)
+    public void RemoveGoldUIEvent(Action evt)
     {
         useGoldUIUpdate.Remove(evt);
     }

@@ -220,7 +220,7 @@ public class GridSystem
     }
     private void CreateUnit(int x, int z, UnitGrade grade)
     {
-        var weapon = Managers.Object.SpawnWeapon(grade);
+        var weapon = Managers.Object.TestSpawnWeapon(grade);
         weapon.transform.SetParent(root.transform);
         Vector3 newPos = GetGridCellPosition(x, z, 2);
         weapon.transform.position = newPos;
@@ -423,5 +423,10 @@ public class GridSystem
     private bool OutOfBounds(int x, int z)
     {
         return x < 0 || x >= width || z < 0 || z >= height;
+    }
+
+    public int GetGridSize()
+    {
+        return width * height;
     }
 }

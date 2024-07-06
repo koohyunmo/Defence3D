@@ -14,9 +14,8 @@ public class GameScene : MonoBehaviour
 
             if (count == totalCount)
              {
-                Debug.Log("Load All");
+                Debug.Log("Resource Load All");
                 Managers.Effect.Init();
-
                 Managers.Object.Init();
 
                 Player player = new Player();
@@ -26,6 +25,7 @@ public class GameScene : MonoBehaviour
                  Managers.UI.ShowSceneUI<UI_MonsterCount>();
                  Managers.UI.ShowSceneUI<UI_HorizontalButtons>();
                  Managers.UI.ShowSceneUI<UI_StatusBar>();
+                 Managers.UI.ShowSceneUI<UI_WeaponCount>();
              }
          });
 

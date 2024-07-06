@@ -34,6 +34,24 @@ public class Bow : Weapon
         LookAtTarget(targetEnemy.transform, bowMesh);
     }
 
+    protected override void LookAtTarget(Transform target, Transform model)
+    {
+        if (target == null) return;
+        if (model == null) return;
+
+        // 타겟의 방향을 계산
+        Vector3 directionToTarget = (target.position - model.position).normalized;
+
+        // 타겟을 향한 회전값 계산
+        Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
+        targetRotation.x = 0f;
+        targetRotation.z = 0f;
+
+        // 모델의 회전
+        model.rotation = targetRotation;
+
+    }
+
     protected override void AttackDetail()
     {
         var projectile = Managers.Resource.Instantiate("Arrow", pooling: true);

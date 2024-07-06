@@ -174,7 +174,7 @@ public class Weapon : GridObject
     {
         return weaponData;
     }
-    protected void LookAtTarget(Transform target, Transform model)
+    protected virtual void LookAtTarget(Transform target, Transform model)
     {
         if(target == null) return;
         if(model == null) return;
