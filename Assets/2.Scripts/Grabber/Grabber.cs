@@ -73,9 +73,11 @@ public class Grabber : MonoBehaviour
         
         selectedObject.Drop();
 
+        // 그리드 정보들 종료
         Cursor.visible = true;
         selectedObject = null;
         Managers.Grid.GetGrid().GridCellViewerOff();
+        Managers.Effect.CloseReinforcePercent();
         lineRenderer.positionCount = 0; // Clear line
     }
 

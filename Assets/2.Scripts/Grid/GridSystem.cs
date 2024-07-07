@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -143,8 +144,8 @@ public class GridSystem
         // 스왑
         if (targetObj)
         {
-            gridObj[sX, sZ].transform.position = GetGridCellPosition(tX, tZ,2);
-            gridObj[tX, tZ].transform.position = GetGridCellPosition(sX, sZ,2);
+            gridObj[sX, sZ].transform.position = GetGridCellPosition(tX, tZ,1);
+            gridObj[tX, tZ].transform.position = GetGridCellPosition(sX, sZ,1);
 
             gridObj[sX, sZ] = targetObj;
             gridObj[tX, tZ] = selectedObj;
@@ -152,7 +153,7 @@ public class GridSystem
         // Move
         else
         {
-            selectedObj.transform.position = GetGridCellPosition(tX, tZ,2);
+            selectedObj.transform.position = GetGridCellPosition(tX, tZ,1);
             gridObj[tX, tZ] = selectedObj;
             gridObj[sX, sZ] = null;
             indexStack.Enqueue(GetIndex(sX, sZ));
@@ -164,7 +165,7 @@ public class GridSystem
         return true;
     }
 
-    public bool AddUnit()
+    public GridObject AddUnit(bool isGamble = false)
     {
         while (indexStack.Count > 0)
         {
@@ -174,16 +175,16 @@ public class GridSystem
             int x = xz.Item1;
             int z = xz.Item2;
 
-            if (OutOfBounds(x, z)) return false; // 밤위 밖 탈출
+            if (OutOfBounds(x, z)) return null; // 밤위 밖 탈출
             if (gridObj[x, z]) continue;
 
             SetValue(x, z, 1);
-            CreateUnit(x, z);
+            CreateUnit(x, z, isGamble);
             gridCell[x, z].TakeUpCell();
-            return true;
+            return gridObj[x, z];
         }
 
-        return false;
+        return null;
     }
 
     public bool AddUnit(UnitGrade grade)
@@ -207,11 +208,11 @@ public class GridSystem
 
         return false;
     }
-    private void CreateUnit(int x, int z)
+    private void CreateUnit(int x, int z, bool isGameble)
     {
-        var weapon = Managers.Object.SpawnWeapon();
+        var weapon = Managers.Object.SpawnWeapon(isGameble);
         weapon.transform.SetParent(root.transform);
-        Vector3 newPos = GetGridCellPosition(x, z, 2);
+        Vector3 newPos = GetGridCellPosition(x, z,1);
         weapon.transform.position = newPos;
 
         gridObj[x, z] = weapon;
@@ -222,7 +223,7 @@ public class GridSystem
     {
         var weapon = Managers.Object.TestSpawnWeapon(grade);
         weapon.transform.SetParent(root.transform);
-        Vector3 newPos = GetGridCellPosition(x, z, 2);
+        Vector3 newPos = GetGridCellPosition(x, z,1);
         weapon.transform.position = newPos;
 
         gridObj[x, z] = weapon;
@@ -321,6 +322,9 @@ public class GridSystem
             {
                 selectedCell = gridCell[pX, pZ];
                 gridCell[pX, pZ].MergeCell();
+                // 강화 확률 UI
+                Managers.Effect.ShowReinforcePercent(Managers.Reinforce.GetPercent(selectedweapon.Level,pointedWeapon.Level),pointedWeapon.transform);
+                return;
             }
             else
             {
@@ -329,6 +333,9 @@ public class GridSystem
             }
 
         }
+
+        // UI 종료
+        Managers.Effect.CloseReinforcePercent();
     }
 
     private void ResetCell()
@@ -428,5 +435,21 @@ public class GridSystem
     public int GetGridSize()
     {
         return width * height;
+    }
+
+    public void Clear()
+    {
+        indexStack  = new();
+
+        for (int x = 0; x < gridArray.GetLength(0); x++)
+        {
+            for (int z = 0; z < gridArray.GetLength(1); z++)
+            {
+
+                gridObj[x,z] = null;
+                indexStack.Enqueue(GetIndex(x, z));
+            }
+        }
+
     }
 }

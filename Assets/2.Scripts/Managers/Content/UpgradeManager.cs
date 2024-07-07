@@ -15,7 +15,7 @@ public class UpgradeManager
 
     public bool Upgrade1(Player player)
     {
-        if(player.gold < Upgrade1Price) return false;
+        if(player.Gold < Upgrade1Price) return false;
         
         player.Upgrade1Weapon();
         player.UseGold(Upgrade1Price);
@@ -25,9 +25,9 @@ public class UpgradeManager
     }
     public bool Upgrade2(Player player)
     {
-        if (player.gold < Upgrade2Price) return false;
+        if (player.Gold < Upgrade2Price) return false;
 
-        player.Upgrade1Weapon();
+        player.Upgrade2Weapon();
         player.UseGold(Upgrade2Price);
         Upgrade2Price += 4;
         InvokeUpdateUI();
@@ -35,7 +35,7 @@ public class UpgradeManager
     }
     public bool Upgrade3(Player player)
     {
-        if (player.gold < Upgrade3Price) return false;
+        if (player.Gold < Upgrade3Price) return false;
 
         player.Upgrade3Weapon();
         player.UseGold(Upgrade3Price);
@@ -45,9 +45,11 @@ public class UpgradeManager
     }
     public bool UpgradeSpawn(Player player)
     {
-        if (player.gold < SpawnUpgradePrice) return false;
+        if (player.Gold < SpawnUpgradePrice) return false;
+        if (Managers.Random.CanUpgrade() == false) return false;
 
         player.UpgradeSpawn();
+        Managers.Random.Upgrade();
         player.UseGold(SpawnUpgradePrice);
         SpawnUpgradePrice += 4;
         InvokeUpdateUI();
@@ -62,15 +64,15 @@ public class UpgradeManager
             case UnitGrade.Basic:
             case UnitGrade.Rare:
             case UnitGrade.Ancient:
-                return player.upgrade1Level;
+                return player.Upgrade1Level;
             case UnitGrade.Relic:
             case UnitGrade.Epic:
             case UnitGrade.Legendary:
-                return player.upgrade2Level;
+                return player.Upgrade2Level;
             case UnitGrade.Mythic:
             case UnitGrade.Mythical:
             case UnitGrade.Primal:
-                return player.upgrade3Level;
+                return player.Upgrade3Level;
 
         }
         return -1;
@@ -91,6 +93,15 @@ public class UpgradeManager
         {
             evt?.Invoke();
         }
+    }
+
+    public void Clear()
+    {
+        Upgrade1Price = 20;
+        Upgrade2Price = 40;
+        Upgrade3Price = 80;
+        SpawnUpgradePrice = 20;
+        InvokeUpdateUI();
     }
 
 }

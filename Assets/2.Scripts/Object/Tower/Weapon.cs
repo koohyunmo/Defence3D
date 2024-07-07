@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using static MyDefine;
 using static MyEnums;
@@ -23,7 +24,7 @@ public class Weapon : GridObject
     protected WeaponData weaponData = null;
     protected Animator anim;
     protected int totalDamage => weaponData.damage * Managers.Upgrade.GetLevel(Grade, Managers.Object.Player);
-    [SerializeField] private int currentDamage;
+    protected TextMeshPro levelTextMesh = null;
 
     /*------------
         프로퍼티
@@ -31,6 +32,8 @@ public class Weapon : GridObject
 
     public WeaponType WeaponType {get; protected set;} = WeaponType.None;
     public UnitGrade Grade  {get; protected set;} = UnitGrade.None;
+    public int Level {get => weaponData.level;}
+
 
     /*------------
         초기 설정
@@ -50,10 +53,18 @@ public class Weapon : GridObject
             rangeObj.gameObject.SetActive(false);
             rangeSprite = rangeObj;
         }
+        if(levelTextMesh == null)
+        {
+            var textObj = Managers.Resource.Instantiate("Level_TextMesh", transform);
+            if(textObj)
+            {
+                levelTextMesh = textObj.GetComponent<TextMeshPro>();
+                levelTextMesh.text = $"LV.{data.level}";
+            }
+        }
         //rangeSprite.transform.localScale = new Vector3(attackRange, attackRange, attackRange) * 2.5f;
         rangeSprite.transform.localScale = new Vector3(attackRange, attackRange, attackRange) * 0.7f;
-
-        currentDamage = totalDamage;
+        gameObject.transform.localScale = Vector3.one;
     }
     /*-------------
         업데이트
@@ -98,7 +109,7 @@ public class Weapon : GridObject
     {
         if (targetEnemy != null)
         {
-            if (targetEnemy.isDead)
+            if (targetEnemy.IsDead)
             {
                 targetEnemy = null;
                 attackCounter = 0;
@@ -106,7 +117,6 @@ public class Weapon : GridObject
             }
             PlayAnim();
             AttackDetail();
-            currentDamage = totalDamage;
         }
     }
 
@@ -119,6 +129,21 @@ public class Weapon : GridObject
     {
         //anim.Play("Slash_1", -1, 0);
     }
+    /*----------------
+        강화 관련 함수
+    ------------------*/
+    public void Upgrade()
+    {
+        weaponData.Upgrade();
+        levelTextMesh.text = $"LV.{weaponData.level}";
+    }
+
+    public void ChangeWeaponData(WeaponData data)
+    {
+        weaponData.SetWeaponData(data);
+        levelTextMesh.text = $"LV.{weaponData.level}";
+    }
+
     /*------------
     탐색 관련 함수
     --------------*/
@@ -141,7 +166,7 @@ public class Weapon : GridObject
 
         foreach (Monster enemy in Managers.Object.GetMonsters())
         {
-            if (enemy.isDead) continue;
+            if (enemy.IsDead) continue;
 
             if (Vector3.Distance(transform.position, enemy.transform.position) <= attackRange)
             {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,9 +28,9 @@ public class GridManager
         grid.Remove(worldPosition);
     }
 
-    public bool AddGridObject()
+    public GridObject AddGridObject(bool isGamble = false)
     {
-        return grid.AddUnit();
+        return grid.AddUnit(isGamble);
     }
 
     public bool AddGridObject(UnitGrade grade)
@@ -60,5 +61,10 @@ public class GridManager
     public Vector3 GetPath(int index)
     {
         return corners[index % corners.Length];
+    }
+
+    public void Clear()
+    {
+        grid.Clear();
     }
 }

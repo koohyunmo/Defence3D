@@ -50,6 +50,16 @@ public class UI_UpgradePopup : UI_Popup
     Text upgrade3LevelTMP;
     Text spawnUpgradeLevelTMP;
 
+    private void OnEnable() 
+    {
+
+        if(upgrade1PriceTMP && spawnUpgradeLevelTMP)
+        {
+            UpdateUI();
+        }
+        
+    }
+
 
     private void Start() 
     {
@@ -64,7 +74,7 @@ public class UI_UpgradePopup : UI_Popup
         Get<Button>((int)Buttons.Upgrade1_Button).gameObject.BindEvent((p) => Managers.Upgrade.Upgrade1(Managers.Object.Player));
         Get<Button>((int)Buttons.Upgrade2_Button).gameObject.BindEvent((p) => Managers.Upgrade.Upgrade2(Managers.Object.Player));
         Get<Button>((int)Buttons.Upgrade3_Button).gameObject.BindEvent((p) => Managers.Upgrade.Upgrade3(Managers.Object.Player));
-        Get<Button>((int)Buttons.SpawnUpgrade_Button).gameObject.BindEvent((p) => Managers.Upgrade.UpgradeSpawn(Managers.Object.Player));
+        Get<Button>((int)Buttons.SpawnUpgrade_Button).gameObject.BindEvent(ClickUpdateSpawn);
 
         upgrade1PriceTMP = Get<TextMeshProUGUI>((int)TMPs.Upgrade1_TMP);
         upgrade2PriceTMP = Get<TextMeshProUGUI>((int)TMPs.Upgrade2_TMP);
@@ -81,6 +91,19 @@ public class UI_UpgradePopup : UI_Popup
         Managers.Upgrade.RegisterUpdateUI(UpdateUI);
     }
 
+    private void ClickUpdateSpawn(PointerEventData data)
+    {
+        if (Managers.Random.CanUpgrade())
+        {
+            Managers.Upgrade.UpgradeSpawn(Managers.Object.Player);
+        }
+        else
+        {
+            spawnUpgradeLevelTMP.text = $"MAX";
+            Get<Button>((int)Buttons.SpawnUpgrade_Button).interactable = false;
+        }
+    }
+
     private void UpdateUI()
     {
         if(gameObject.activeSelf == false) return;
@@ -93,7 +116,17 @@ public class UI_UpgradePopup : UI_Popup
         upgrade1LevelTMP.text = $" LV{Managers.Upgrade.GetLevel(MyEnums.UnitGrade.Basic, Managers.Object.Player)} ";
         upgrade2LevelTMP.text = $" LV{Managers.Upgrade.GetLevel(MyEnums.UnitGrade.Relic, Managers.Object.Player)} ";
         upgrade3LevelTMP.text = $" LV{Managers.Upgrade.GetLevel(MyEnums.UnitGrade.Mythic, Managers.Object.Player)} ";
-        spawnUpgradeLevelTMP.text = $" LV{Managers.Upgrade.GetLevel(MyEnums.UnitGrade.Basic, Managers.Object.Player)} ";
+
+        if (Managers.Random.CanUpgrade())
+        {
+            spawnUpgradeLevelTMP.text = $" LV{Managers.Object.Player.SpawnLevel} ";
+        }
+        else
+        {
+            spawnUpgradeLevelTMP.text = $"MAX";
+            Get<Button>((int)Buttons.SpawnUpgrade_Button).interactable = false;
+        }
+
     }
 
     private void ClosePopup(PointerEventData data)

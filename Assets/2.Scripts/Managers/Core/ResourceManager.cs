@@ -22,7 +22,18 @@ public class ResourceManager
 
 		return null;
 	}
-
+	public void PrePooling(GameObject prefab, int count = 5)
+	{
+		List<GameObject> pool = new();
+		for(int i =0; i < count; i++)
+		{
+			pool.Add(Instantiate(prefab, pooling:true));
+		}
+		for (int i = 0; i < count; i++)
+		{
+			Destroy(pool[i]);
+		}
+	}
 	public GameObject Instantiate(string key, Transform parent = null, bool pooling = false)
 	{
 		GameObject prefab = Load<GameObject>($"{key}");

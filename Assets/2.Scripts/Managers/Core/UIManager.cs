@@ -103,18 +103,19 @@ public class UIManager
 		return popup;
     }
 
-    public void ClosePopupUI(UI_Popup popup)
+    public bool ClosePopupUI(UI_Popup popup)
     {
 		if (_popupStack.Count == 0)
-			return;
+			return false;
 
         if (_popupStack.Peek() != popup)
         {
             Debug.Log("Close Popup Failed!");
-            return;
+            return false;
         }
 
         ClosePopupUI();
+        return true;
     }
 
     public void ClosePopupUI()

@@ -6,19 +6,43 @@ using UnityEngine;
 public class SpawnManager
 {
     private int spawnPrice = 20;
-    private int gambleSpawnPrice = 50;
+    private int gambleSpawnPrice = 1;
 
     List<Action> updateUI = new List<Action>();
 
-    public bool Spawn(Player player)
+    public bool Spawn(Player player, out GameObject gridObj)
     {
-        if(player.gold < spawnPrice) return false;
+        gridObj = null;
+        if (player.Gold < spawnPrice) return false;
 
-        if(Managers.Grid.AddGridObject())
+        var createdObj = Managers.Grid.AddGridObject();
+
+        if (createdObj)
         {
             player.UseGold(spawnPrice);
-            spawnPrice+=2;
+            spawnPrice += 2;
             InvokeUI();
+            gridObj = createdObj.gameObject;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public bool GambleSpawn(Player player, out GameObject gridObj)
+    {
+        gridObj = null;
+        if (player.Gem < gambleSpawnPrice) return false;
+
+        var createdObj = Managers.Grid.AddGridObject(isGamble: true);
+
+        if (createdObj)
+        {
+            player.UseGem(gambleSpawnPrice);
+            InvokeUI();
+            gridObj = createdObj.gameObject;
             return true;
         }
         else
@@ -38,7 +62,7 @@ public class SpawnManager
 
     public void InvokeUI()
     {
-        foreach(Action action in updateUI)
+        foreach (Action action in updateUI)
         {
             action?.Invoke();
         }
@@ -51,5 +75,12 @@ public class SpawnManager
     public void RemoveUI(Action evt)
     {
         updateUI.Remove(evt);
+    }
+
+    public void Clear()
+    {
+        spawnPrice = 20;
+        gambleSpawnPrice = 1;
+        InvokeUI();
     }
 }

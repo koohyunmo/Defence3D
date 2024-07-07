@@ -5,52 +5,71 @@ using UnityEngine;
 
 public class Player
 {
-    public int gold = 100;
-    public int spawnLevel = 1;
-    public int upgrade1Level = 1;
-    public int upgrade2Level = 1;
-    public int upgrade3Level = 1;
+    public int Gold {get; private set;}= 100;
+    public int Gem { get; private set; } = 1;
+    public int SpawnLevel { get; private set; } = 1;
+    public int Upgrade1Level { get; private set; } = 1;
+    public int Upgrade2Level { get; private set; } = 1;
+    public int Upgrade3Level { get; private set; } = 1;
 
     public Player()
     {
-        gold = 100;
-        spawnLevel = 1;
-        upgrade1Level = 1;
-        upgrade2Level = 1;
-        upgrade3Level = 1;
+        Gold = 100;
+        Gem = 1;
+        SpawnLevel = 1;
+        Upgrade1Level = 1;
+        Upgrade2Level = 1;
+        Upgrade3Level = 1;
     }
 
     public void UpgradeSpawn()
     {
-        spawnLevel++;
+        SpawnLevel++;
     }
     public void Upgrade1Weapon()
     {
-        upgrade1Level++;
+        Upgrade1Level++;
     }
     public void Upgrade2Weapon()
     {
-        upgrade2Level++;
+        Upgrade2Level++;
     }
     public void Upgrade3Weapon()
     {
-        upgrade3Level++;
+        Upgrade3Level++;
     }
     public void UseGold(int price)
     {
-        gold-=price;
-        Debug.Assert(gold >= 0);
+        Gold-=price;
+        Debug.Assert(Gold >= 0);
         Managers.Notify.NotifyChangedGold();
     }
     public void GoldReward()
     {
-        gold++;
+        Gold++;
+        Managers.Notify.NotifyChangedGold();
+    }
+    public void GemReward(int v = 1)
+    {
+        Gem += v;
         Managers.Notify.NotifyChangedGold();
     }
 
     public void SetGold(int v)
     {
-        gold += v;
+        Gold += v;
+        Managers.Notify.NotifyChangedGold();
+    }
+    public void SetGem(int v)
+    {
+        Gem += v;
+        Managers.Notify.NotifyChangedGold();
+    }
+
+    public void UseGem(int gambleSpawnPrice)
+    {
+        Gem -= gambleSpawnPrice;
+        Debug.Assert(Gem >= 0);
         Managers.Notify.NotifyChangedGold();
     }
 }

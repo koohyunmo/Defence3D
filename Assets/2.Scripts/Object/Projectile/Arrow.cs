@@ -14,14 +14,14 @@ public class Arrow : Projectile
         projectile.transform.position = transform.position;
         Vector3 targetPosition = enemy.transform.position;
 
-        while (enemy != null && enemy.isDead == false && GetDistance(targetPosition, projectile) > 0.50f)
+        while (enemy != null && enemy.IsDead == false && GetDistance(targetPosition, projectile) > 0.50f)
         {
             LookAtTarget(targetPosition, projectile.transform);
             projectile.transform.position = Vector3.MoveTowards(projectile.transform.position, targetPosition, speed * Time.deltaTime);
             yield return null;
 
             // Update targetPosition if the enemy is still alive
-            if (enemy != null && enemy.isDead == false)
+            if (enemy != null && enemy.IsDead == false)
             {
                 targetPosition = enemy.transform.position;
             }
@@ -35,7 +35,7 @@ public class Arrow : Projectile
             yield return null;
         }
 
-        if (projectile != null && enemy != null && enemy.isDead == false)
+        if (projectile != null && enemy != null && enemy.IsDead == false)
         {
             if(GetDistance(enemy.transform.position, projectile) < 0.50f) // 풀링때문에 뒤에 맞는 공격 방지
                 enemy.GetComponent<Monster>().OnDamage(damage);

@@ -7,20 +7,22 @@ using static MyDefine;
 public class Monster : MonoBehaviour
 {
     TestFollowPath movement;
-    public bool isDead = false;
-    int hp {get => data.hp; set => data.hp = value;}
+    protected int hp {get => data.hp; set => data.hp = value;}
 
-    [SerializeField] int maxHp;
+    protected int maxHp {get => data.maxHp; set => data.maxHp = value;}
 
-    MonsterData data = null;
+    protected MonsterData data = null;
+    protected HpBar hpBar = null;
 
-    HpBar hpBar = null;
+    public bool IsDead { get; protected set; } = false;
+
+
 
     public virtual void Spawn(MonsterData data) 
     {
         this.data = data;
 
-        isDead = false;
+        IsDead = false;
 
         if (movement == null)
             movement = gameObject.GetComponent<TestFollowPath>();
@@ -43,7 +45,7 @@ public class Monster : MonoBehaviour
         gameObject.tag = MONSTER_TAG;
     }
 
-    public void OnDamage(int damage)
+    public virtual void OnDamage(int damage)
     {
         hp -= damage;
 
@@ -53,10 +55,10 @@ public class Monster : MonoBehaviour
 
         if (hp <= 0)
         {
-            if(isDead == false)
+            if(IsDead == false)
             {
                 OnDead();
-                isDead = true;
+                IsDead = true;
             }
 
         }
@@ -66,11 +68,15 @@ public class Monster : MonoBehaviour
     {
         Reward();
         Managers.Object.DespawnMonster(this);
-        Debug.Log("TODO : 몬스터 죽는 사운드");
+        //Debug.Log("TODO : 몬스터 죽는 사운드");
     }
 
     protected virtual void Reward()
     {
         Managers.Object.Player.GoldReward();
+    }
+    public MonsterData GetData()
+    {
+        return data;
     }
 }

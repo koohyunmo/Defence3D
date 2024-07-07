@@ -10,7 +10,7 @@ public class GameScene : MonoBehaviour
 
          Managers.Resource.LoadAllAsync<Object>("prefab", (key, count, totalCount) =>
          {
-             Debug.Log($"{key} {count}/{totalCount}");
+             //Debug.Log($"{key} {count}/{totalCount}");
 
             if (count == totalCount)
              {
@@ -18,24 +18,22 @@ public class GameScene : MonoBehaviour
                 Managers.Effect.Init();
                 Managers.Object.Init();
 
-                Player player = new Player();
-                Managers.Object.SetPlayer(player);
-
                  Managers.UI.ShowSceneUI<UI_StageTimerAndStageCount>();
                  Managers.UI.ShowSceneUI<UI_MonsterCount>();
                  Managers.UI.ShowSceneUI<UI_HorizontalButtons>();
                  Managers.UI.ShowSceneUI<UI_StatusBar>();
                  Managers.UI.ShowSceneUI<UI_WeaponCount>();
+
              }
          });
 
-        StartCoroutine(co_MonsterSpawn());
+        StartCoroutine(co_GameStart());
     }
 
-    IEnumerator co_MonsterSpawn()
+    IEnumerator co_GameStart()
     {
-        yield return new WaitForSeconds(5f);
-        Managers.Stage.StagetStart();
+        Managers.Stage.GameStart();
+        yield break;
     }
 
 }

@@ -95,9 +95,13 @@ public class PoolManager
         return true;
     }
 
-    void CreatePool(GameObject prefab)
+    public void CreatePool(GameObject prefab)
     {
         Pool pool = new Pool(prefab);
         _pools.Add(prefab.name, pool);
+    }
+    public bool IsPoolCreated(string prefabName)
+    {
+        return _pools.ContainsKey(prefabName);
     }
 }

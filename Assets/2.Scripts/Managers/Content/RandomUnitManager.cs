@@ -18,8 +18,39 @@ public class RandomManager
         { UnitGrade.Primal, 0.019f }
     };
 
-    public void Init() { }
+    private Dictionary<UnitGrade, float> gambleProbabilities; // 고급 확률표
 
+    private List<UnitGrade> grades;
+    private List<float> cumulativeProbabilities; // 기본 누적확률
+    private List<float> cumulativeGambleProbabilities; // 고급 누적확률
+
+    public void Init()
+    {
+        grades = new List<UnitGrade>(probabilities.Keys);
+        cumulativeProbabilities = new List<float>(grades.Count);
+        cumulativeGambleProbabilities = new List<float>(grades.Count);
+        gambleProbabilities = new Dictionary<UnitGrade, float>(probabilities); // 확률 복사
+
+        float cumulative = 0f;
+        foreach (var grade in grades)
+        {
+            cumulative += probabilities[grade];
+            cumulativeProbabilities.Add(cumulative);
+            cumulativeGambleProbabilities.Add(cumulative);
+        }
+
+        for (int i = 0; i < 40; i++)
+        {
+            GambleUpgrade();
+        }
+    }
+
+    /*----------------
+      확률 업그레이드
+    ------------------*/
+    /// <summary>
+    /// 기본 확률 업그레이드
+    /// </summary>
     public void Upgrade()
     {
         float basicDecreaseRate = 0.9f; // Basic 확률 감소율
@@ -29,37 +60,107 @@ public class RandomManager
 
         probabilities[UnitGrade.Basic] *= basicDecreaseRate;
 
-        foreach (var grade in probabilities.Keys)
+        foreach (var grade in grades)
         {
             if (grade != UnitGrade.Basic)
             {
                 probabilities[grade] = probabilities[grade] / totalOtherProbability * totalCurrentOtherProbability;
             }
         }
+
+        // 누적 확률 재계산
+        cumulativeProbabilities.Clear();
+        float cumulative = 0f;
+        foreach (var grade in grades)
+        {
+            cumulative += probabilities[grade];
+            cumulativeProbabilities.Add(cumulative);
+            Debug.Log($"{grade} 확률 : {probabilities[grade]}");
+        }
     }
 
-    private UnitGrade GetRandomGrade()
+    /// <summary>
+    /// 고급 확률 업그레이드
+    /// </summary>
+    private void GambleUpgrade()
     {
-        float randomValue = Random.Range(0f, 100f);
-        float cumulativeProbability = 0f;
+        float basicDecreaseRate = 0.9f; // Basic 확률 감소율
+        float basicCurrentProbability = gambleProbabilities[UnitGrade.Basic];
+        float totalOtherProbability = 100.0f - basicCurrentProbability;
+        float totalCurrentOtherProbability = 100.0f - (basicCurrentProbability * basicDecreaseRate);
 
-        foreach (var grade in probabilities.Keys)
+        gambleProbabilities[UnitGrade.Basic] *= basicDecreaseRate;
+
+        foreach (var grade in grades)
         {
-            cumulativeProbability += probabilities[grade];
-            if (randomValue <= cumulativeProbability)
+            if (grade != UnitGrade.Basic)
             {
-                return grade;
+                gambleProbabilities[grade] = gambleProbabilities[grade] / totalOtherProbability * totalCurrentOtherProbability;
             }
         }
 
-        return UnitGrade.Basic; // 기본값
+        // 누적 확률 재계산
+        cumulativeGambleProbabilities.Clear();
+        float cumulative = 0f;
+        foreach (var grade in grades)
+        {
+            cumulative += gambleProbabilities[grade];
+            cumulativeGambleProbabilities.Add(cumulative);
+            //Debug.Log($"도박 {grade} 확률 : {gambleProbabilities[grade]}");
+        }
     }
 
-    public (int, Color) GetTestColorAndRank()
+    /*----------------
+        확률 검색
+    ------------------*/
+    private UnitGrade GetRandomGrade()
     {
-        UnitGrade selectedGrade = GetRandomGrade();
-        return ((int)selectedGrade, Managers.Data.GetColorForGrade(selectedGrade));
+        float randomValue = Random.Range(0f, 100f);
+
+        int index = cumulativeProbabilities.BinarySearch(randomValue);
+        if (index < 0)
+        {
+            index = ~index; //못찾은 경우
+        }
+
+        return grades[index];
     }
+
+    private UnitGrade GetGambleRandomGrade()
+    {
+        float randomValue = Random.Range(0f, 100f);
+
+        int index = cumulativeGambleProbabilities.BinarySearch(randomValue);
+        if (index < 0)
+        {
+            index = ~index; //못찾은 경우
+        }
+
+        return grades[index];
+    }
+
+    /*----------------
+        게터 세터
+    ------------------*/
+
+    public bool CanUpgrade()
+    {
+        return probabilities[UnitGrade.Basic] > 1f;
+    }
+
+    public int GetGambleRank()
+    {
+        return (int)GetGambleRandomGrade();
+    }
+
+    public int GetRank()
+    {
+        return (int)GetRandomGrade();
+    }
+
+    /*----------------
+        확률 테스트
+    ------------------*/
 
     public int TestRandom()
     {
@@ -77,5 +178,46 @@ public class RandomManager
             float probabilityPercentage = probabilities[selectedGrade];
             Debug.Log("Selected Unit Grade: " + selectedGrade + ", Probability: " + probabilityPercentage + "%");
         }
+    }
+
+    /*----------------
+            클리어
+    ------------------*/
+
+    public void Clear()
+    {
+        probabilities.Clear();
+
+        probabilities = new Dictionary<UnitGrade, float>()
+    {
+        { UnitGrade.Basic, 50.0f },
+        { UnitGrade.Rare, 33.1f },
+        { UnitGrade.Ancient, 10.2f },
+        { UnitGrade.Relic, 5.1f },
+        { UnitGrade.Epic, 0.8f },
+        { UnitGrade.Legendary, 0.5f },
+        { UnitGrade.Mythic, 0.2f },
+        { UnitGrade.Mythical, 0.08f },
+        { UnitGrade.Primal, 0.019f }
+    };
+
+        grades = new List<UnitGrade>(probabilities.Keys);
+        cumulativeProbabilities = new List<float>(grades.Count);
+        cumulativeGambleProbabilities = new List<float>(grades.Count);
+        gambleProbabilities = new Dictionary<UnitGrade, float>(probabilities); // 확률 복사
+
+        float cumulative = 0f;
+        foreach (var grade in grades)
+        {
+            cumulative += probabilities[grade];
+            cumulativeProbabilities.Add(cumulative);
+            cumulativeGambleProbabilities.Add(cumulative);
+        }
+
+        for (int i = 0; i < 40; i++)
+        {
+            GambleUpgrade();
+        }
+
     }
 }

@@ -32,8 +32,8 @@ public class UI_StatusBar : UI_Scene
 
     private void UpdateGoldGemUI()
     {
-        goldTMP.text = Managers.Object.Player.gold.ToString();
-        gemTMP.text = Managers.Object.Player.gold.ToString();
+        goldTMP.text = Managers.Object.Player.Gold.ToString();
+        gemTMP.text = Managers.Object.Player.Gem.ToString();
     }
     private void UpdateUnitCountUI()
     {

@@ -15,6 +15,19 @@ public abstract class UI_Base : MonoBehaviour
 		Init();
 	}
 
+	protected Vector3 UIToWorldPoint()
+	{
+		// 마우스 클릭 위치를 기준으로 2D 좌표를 만듭니다.
+		Vector3 mousePos = Input.mousePosition;
+
+		// 적당한 z 값을 입력하여 월드 좌표로 변환합니다.
+		mousePos.z = 10f; // 예시로 z 값은 10으로 설정합니다. 필요에 따라 조절 가능합니다.
+		Vector3 startWorldPos = Camera.main.ScreenToWorldPoint(mousePos);
+
+		return startWorldPos;
+	}
+
+
 	protected void Bind<T>(Type type) where T : UnityEngine.Object
 	{
 		try

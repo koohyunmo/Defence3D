@@ -24,7 +24,7 @@ public class UI_StageTimerAndStageCount : UI_Scene
         timer = Get<Text>((int)Texts.TimerText);
         stageCounter = Get<TextMeshProUGUI>((int)TMPs.StageTMP);
 
-        timer.text = FormatTime(Managers.Stage.GetTime());
+        timer.text = Utils.FormatMinutesTime(Managers.Stage.GetTime());
         stageCounter.text = $"STAGE {Managers.Stage.GetStageCount()}";
 
         StartCoroutine(co_Timer());
@@ -34,17 +34,11 @@ public class UI_StageTimerAndStageCount : UI_Scene
         // 게임이 끝날때 까지
         while (true)
         {
-            timer.text = FormatTime(Managers.Stage.GetTime());
+            timer.text = Utils.FormatMinutesTime(Managers.Stage.GetTime());
             stageCounter.text = $"STAGE {Managers.Stage.GetStageCount()}";
             yield return new WaitForSeconds(1f);
         }
     }
-    string FormatTime(float timeInSeconds)
-    {
-        int minutes = Mathf.FloorToInt(timeInSeconds / 60);
-        int seconds = Mathf.FloorToInt(timeInSeconds % 60);
 
-        return string.Format("{0:00}:{1:00}", minutes, seconds);
-    }
 
 }

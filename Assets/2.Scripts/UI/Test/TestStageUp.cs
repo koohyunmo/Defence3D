@@ -8,4 +8,9 @@ public class TestStageUp : MonoBehaviour
     {
         Managers.Stage.TestUpStage();
     }
+
+    public void StageClear()
+    {
+        Managers.Stage.Resert();
+    }
 }
